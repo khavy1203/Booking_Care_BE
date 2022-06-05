@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       image: {
-        type: Sequelize.STRING,
+        type: Sequelize.BLOB("long"),
       },
 
       nameVI: {
@@ -53,6 +53,13 @@ module.exports = {
 
       provinceId: {
         type: Sequelize.INTEGER,
+      },
+
+      createdAt: {
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
       },
     });
   },

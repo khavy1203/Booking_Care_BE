@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       image: {
-        type: Sequelize.STRING,
+        type: Sequelize.BLOB("long"),
       },
       nameVI: {
         type: Sequelize.STRING,
@@ -35,6 +35,12 @@ module.exports = {
       },
       descriptionMarkdown_EN: {
         type: Sequelize.TEXT,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
       },
     });
   },
