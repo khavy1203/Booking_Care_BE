@@ -1,7 +1,7 @@
 //Huyen
 const db = require("../models");
 
-let createSpecialty = (data) => {
+const createSpecialty = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (
@@ -13,12 +13,13 @@ let createSpecialty = (data) => {
         !data.descriptionMarkdown_EN
       ) {
         resolve({
-          errCode: 1,
-          errMessage: "Missing parameter",
+          EM: "Missing parameter",
+          EC: 1,
+          ED: "",
         });
       } else {
         await db.Specialties.create({
-          imageBase64: data.imageBase64 || "",
+          image: data.imageBase64 || "",
           nameVI: data.nameVI,
           descriptionHTML_VI: data.descriptionHTML_VI,
           descriptionMarkdown_VI: data.descriptionMarkdown_VI,

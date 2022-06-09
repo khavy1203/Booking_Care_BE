@@ -3,7 +3,15 @@ import jwt from "jsonwebtoken";
 
 // const nonSecurePaths = ['/logout', '/login', '/register'];//mảng này chứa các phần sẽ sẽ không đượccheck quyền
 //Huyên: sài tạm để test, xong thì mở cmt trên
-const nonSecurePaths = ["/logout", "/login", "/register", "/specialty/create"]; //mảng này chứa các phần sẽ sẽ không đượccheck quyền
+const nonSecurePaths = [
+  "/logout",
+  "/login",
+  "/register",
+  "/specialty/create",
+  "/top-doctor-home",
+  "/timeframe/read",
+  "/schedule/create",
+]; //mảng này chứa các phần sẽ sẽ không đượccheck quyền
 
 const createJWT = (payload) => {
   let key = process.env.JWT_SECRET;

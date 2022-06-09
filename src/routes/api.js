@@ -4,7 +4,9 @@ import userController from "../controller/userController";
 import groupController from "../controller/groupController";
 import { checkUserJwt, checkUserPermission } from "../middleware/JWTaction";
 import specialtyController from "../controller/specialtyController";
-
+import doctorController from "../controller/doctorController";
+import timeframeController from "../controller/timefameController";
+import scheduleController from "../controller/scheduleController";
 const routes = express.Router();
 
 const initApiRoutes = (app) => {
@@ -30,6 +32,15 @@ const initApiRoutes = (app) => {
   routes.post("/specialty/create", specialtyController.createSpecialty);
   routes.put("/specialty/update", specialtyController.updateSpecialty);
   routes.delete("/specialty/delete", specialtyController.deleteSpecialty);
+
+  //doctor router
+  routes.get("/top-doctor-home", doctorController.getTopDoctorHome);
+
+  //schedule router
+  routes.post("/schedule/create", scheduleController.createFunc);
+
+  //timeframe router
+  routes.get("/timeframe/read", timeframeController.readFunc);
 
   return app.use("/api/v1/", routes);
 };
