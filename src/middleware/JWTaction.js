@@ -1,12 +1,14 @@
 require("dotenv").config();
 import jwt from "jsonwebtoken";
 
-// const nonSecurePaths = ['/logout', '/login', '/register'];//mảng này chứa các phần sẽ sẽ không đượccheck quyền
-//Huyên: sài tạm để test, xong thì mở cmt trên
 const nonSecurePaths = [
   "/logout",
   "/login",
   "/register",
+  "/google",
+  "/auth/google/callback",
+  "/github",
+  "/auth/github/callback",
   "/specialty/create",
   "/top-doctor-home",
   "/timeframe/read",
@@ -52,16 +54,23 @@ const extractToken = (req) => {
   return null;
 };
 
+//huyên
 function checkNoneSecureDetailPaths(path) {
   for (let item of nonSecureDetailPaths) {
     if (path.includes(item)) return true;
   }
   return false;
 }
+//
 
 const checkUserJwt = (req, res, next) => {
   //xác thực trước khi gửi xuống
-  if (nonSecurePaths.includes(req.path) || checkNoneSecureDetailPaths(req.path))
+  if (
+    nonSecurePaths.includes(req.path) ||
+    //huyên
+    checkNoneSecureDetailPaths(req.path)
+    //
+  )
     return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì
 
   let cookies = req.cookies; //lấy cookie từ client
@@ -96,7 +105,9 @@ const checkUserPermission = (req, res, next) => {
   // xác thực quyền truy cập trước khi gửi đi
   if (
     nonSecurePaths.includes(req.path) ||
+    //huyen
     checkNoneSecureDetailPaths(req.path) ||
+    //
     req.path === "/account"
   )
     return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì

@@ -43,6 +43,8 @@ module.exports = (sequelize, DataTypes) => {
       genderId: DataTypes.INTEGER,
       groupId: DataTypes.INTEGER,
       clinicId: DataTypes.INTEGER,
+      googleId: DataTypes.STRING,
+      githubId: DataTypes.STRING,
     },
     {
       sequelize,

@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Schedules.init(
     {
+      //huyên: đổi date sang string
       date: DataTypes.STRING,
       doctorId: DataTypes.INTEGER,
     },

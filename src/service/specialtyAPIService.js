@@ -1,7 +1,7 @@
 //Huyen
-const db = require("../models");
+import db from "../models/index.js"; //connectdb
 
-const createSpecialty = (data) => {
+let createSpecialty = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (

@@ -25,9 +25,11 @@ module.exports = {
       },
       username: {
         type: Sequelize.STRING,
+        // collate: 'utf32_vietnamese_ci'
       },
       address: {
         type: Sequelize.STRING,
+        // collate: 'utf32_vietnamese_ci'
       },
       phone: {
         type: Sequelize.STRING,
@@ -45,6 +47,14 @@ module.exports = {
       },
       clinicId: {
         type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      googleId: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      githubId: {
+        type: Sequelize.STRING,
         allowNull: true,
       },
       createdAt: {

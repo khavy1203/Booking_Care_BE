@@ -11,6 +11,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      //Huyên đã đổi date sang string
       date: {
         type: Sequelize.STRING,
       },
