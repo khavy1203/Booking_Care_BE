@@ -18,7 +18,7 @@ const createSchedule = async (data) => {
     //kiểm tra có đúng là bác sĩ gửi request không
     if (user) {
       //lấy ra schedule cần tìm thuộc 1 ngày của bác sĩ
-      let findedSchedule = await db.Schedules.findOne({
+      let foundSchedule = await db.Schedules.findOne({
         where: {
           [Op.and]: {
             date: data.date,
@@ -27,14 +27,14 @@ const createSchedule = async (data) => {
         },
       });
 
-      // console.log(findedSchedule);
+      // console.log(foundSchedule);
       //Nếu có tồn tại schedule của bác sĩ trong ngày cần tìm thì cập nhật, ngược lại thì thêm mới
-      if (findedSchedule) {
-        //lấy ra các bản ghi kế hoạch chi tiết bằng id của findedSchedule
-        let findedScheduleDetail = await db.Schedule_Detail.findAll({
+      if (foundSchedule) {
+        //lấy ra các bản ghi kế hoạch chi tiết bằng id của foundSchedule
+        let foundScheduleDetail = await db.Schedule_Detail.findAll({
           attributes: ["timeframeId", "maxNumber"],
           where: {
-            scheduleId: findedSchedule.id,
+            scheduleId: foundSchedule.id,
           },
           raw: true,
         });
@@ -44,7 +44,7 @@ const createSchedule = async (data) => {
         // console.log("==============================================");
 
         //timeDetail của DB
-        let timeDetailDB = [...findedScheduleDetail];
+        let timeDetailDB = [...foundScheduleDetail];
 
         //timeDetail dc gửi
         let timeDetailRequest = [...data.timeDetail];
@@ -71,7 +71,7 @@ const createSchedule = async (data) => {
         if (differenceTimeId && differenceTimeId.length > 0) {
           let scheduleDetailList = [...differenceTimeId];
           scheduleDetailList.forEach(function (item) {
-            item.scheduleId = findedSchedule.id;
+            item.scheduleId = foundSchedule.id;
           });
           await db.Schedule_Detail.bulkCreate(scheduleDetailList);
         }
@@ -84,7 +84,7 @@ const createSchedule = async (data) => {
             },
             {
               where: {
-                scheduleId: findedSchedule.id,
+                scheduleId: foundSchedule.id,
               },
             }
           );
@@ -141,4 +141,42 @@ const createSchedule = async (data) => {
   }
 };
 
-module.exports = { createSchedule };
+const getSchedule = async (data) => {
+  try {
+    let scheduleDetail = await db.Schedules.findAll({
+      where: { doctorId: data },
+      raw: false,
+      nest: true,
+      include: {
+        model: db.Schedule_Detail,
+      },
+    });
+    if (scheduleDetail && scheduleDetail.length > 0) {
+      return {
+        EM: "get data successfully",
+        EC: "0",
+        DT: scheduleDetail,
+      };
+    } else if (scheduleDetail.length === 0) {
+      return {
+        EM: "maybe this doctor don't have a schedule...",
+        EC: "1",
+        DT: [],
+      };
+    }
+    return {
+      EM: "get data fail...",
+      EC: "-1",
+      DT: [],
+    };
+  } catch (error) {
+    console.log("error from service : >>>", error);
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
+
+module.exports = { createSchedule, getSchedule };

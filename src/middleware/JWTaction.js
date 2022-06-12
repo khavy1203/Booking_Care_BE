@@ -11,7 +11,11 @@ const nonSecurePaths = [
   "/top-doctor-home",
   "/timeframe/read",
   "/schedule/create",
-]; //mảng này chứa các phần sẽ sẽ không đượccheck quyền
+]; //mảng này chứa các phần sẽ sẽ không được check quyền
+
+//huyên
+const nonSecureDetailPaths = [`/doctor-detail/`, "/schedule/get-schedule/"]; //mảng này chứa các đường dẫn chi tiết không cần check quyền
+//
 
 const createJWT = (payload) => {
   let key = process.env.JWT_SECRET;
@@ -48,9 +52,18 @@ const extractToken = (req) => {
   return null;
 };
 
+function checkNoneSecureDetailPaths(path) {
+  for (let item of nonSecureDetailPaths) {
+    if (path.includes(item)) return true;
+  }
+  return false;
+}
+
 const checkUserJwt = (req, res, next) => {
   //xác thực trước khi gửi xuống
-  if (nonSecurePaths.includes(req.path)) return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì
+  if (nonSecurePaths.includes(req.path) || checkNoneSecureDetailPaths(req.path))
+    return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì
+
   let cookies = req.cookies; //lấy cookie từ client
   let tokenFromHeader = extractToken(req);
   if ((cookies && cookies.jwt) || tokenFromHeader) {
@@ -78,9 +91,14 @@ const checkUserJwt = (req, res, next) => {
     });
   }
 };
+
 const checkUserPermission = (req, res, next) => {
   // xác thực quyền truy cập trước khi gửi đi
-  if (nonSecurePaths.includes(req.path) || req.path === "/account")
+  if (
+    nonSecurePaths.includes(req.path) ||
+    checkNoneSecureDetailPaths(req.path) ||
+    req.path === "/account"
+  )
     return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì
   if (req.user) {
     let email = req.user.email; //lấy email

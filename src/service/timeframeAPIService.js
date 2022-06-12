@@ -4,7 +4,7 @@ import db from "../models/index.js"; //connectdb
 const getAllTimes = async () => {
   try {
     let times = await db.Timeframes.findAll();
-    if (times) {
+    if (times && times.length > 0) {
       return {
         EM: "get data successfully",
         EC: "0",

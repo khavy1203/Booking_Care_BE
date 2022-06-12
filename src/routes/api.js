@@ -7,6 +7,7 @@ import specialtyController from "../controller/specialtyController";
 import doctorController from "../controller/doctorController";
 import timeframeController from "../controller/timefameController";
 import scheduleController from "../controller/scheduleController";
+
 const routes = express.Router();
 
 const initApiRoutes = (app) => {
@@ -29,15 +30,17 @@ const initApiRoutes = (app) => {
 
   //specialty router
   routes.get("/specialty/read", specialtyController.readSpecialty);
-  routes.post("/specialty/create", specialtyController.createSpecialty);
-  routes.put("/specialty/update", specialtyController.updateSpecialty);
-  routes.delete("/specialty/delete", specialtyController.deleteSpecialty);
+  // routes.post("/specialty/create", specialtyController.createSpecialty);
+  // routes.put("/specialty/update", specialtyController.updateSpecialty);
+  // routes.delete("/specialty/delete", specialtyController.deleteSpecialty);
 
   //doctor router
   routes.get("/top-doctor-home", doctorController.getTopDoctorHome);
+  routes.get("/doctor-detail/:id", doctorController.getInfoDoctor);
 
   //schedule router
   routes.post("/schedule/create", scheduleController.createFunc);
+  routes.get("/schedule/get-schedule/:id", scheduleController.getSchedule);
 
   //timeframe router
   routes.get("/timeframe/read", timeframeController.readFunc);
