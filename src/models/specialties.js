@@ -15,6 +15,16 @@ module.exports = (sequelize, DataTypes) => {
       Specialties.hasMany(models.Clinic_Specialty, {
         foreignKey: "specialtyId",
       });
+
+      //Huyên: định nghĩa lại quan hệ n-n
+      Specialties.belongsToMany(models.Users, {
+        through: "Doctor_Specialty",
+        foreignKey: "specilatyId",
+      });
+      Specialties.belongsToMany(models.Clinics, {
+        through: "Clinic_Specialty",
+        foreignKey: "specilatyId",
+      });
     }
   }
   Specialties.init(

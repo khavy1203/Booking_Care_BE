@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
       Timeframes.hasMany(models.Schedule_Detail, {
         foreignKey: "timeframeId",
       });
+      Timeframes.belongsToMany(models.Schedules, {
+        through: "Schedule_Detail",
+        foreignKey: "timeframeId",
+      });
     }
   }
   Timeframes.init(

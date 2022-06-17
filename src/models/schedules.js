@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "scheduleId",
       });
       Schedules.belongsTo(models.Users, { foreignKey: "doctorId" });
+      Schedules.belongsToMany(models.Timeframes, {
+        through: "Schedule_Detail",
+        foreignKey: "scheduleId",
+      });
     }
   }
   Schedules.init(

@@ -7,16 +7,11 @@ const createSchedule = async (data) => {
   try {
     //tìm user là bác sĩ gửi request
     let user = await db.Users.findOne({
-      where: {
-        [Op.and]: {
-          email: data.email,
-          groupId: data.groupId,
-        },
-      },
+      where: { email: data.email },
     });
 
     //kiểm tra có đúng là bác sĩ gửi request không
-    if (user) {
+    if (user && user.groupId === data.groupWithRoles.id) {
       //lấy ra schedule cần tìm thuộc 1 ngày của bác sĩ
       let foundSchedule = await db.Schedules.findOne({
         where: {
@@ -126,9 +121,9 @@ const createSchedule = async (data) => {
       }
     } else {
       return {
-        EM: "User not found...",
+        EM: "User is not doctor...",
         EC: "1",
-        DT: "",
+        DT: [],
       };
     }
   } catch (e) {
@@ -141,34 +136,39 @@ const createSchedule = async (data) => {
   }
 };
 
-const getSchedule = async (data) => {
+const getSchedule = async (doctorId, date) => {
   try {
-    let scheduleDetail = await db.Schedules.findAll({
-      where: { doctorId: data },
+    let scheduleDetail = await db.Schedules.findOne({
+      where: { doctorId: doctorId, date: date },
+      attributes: ["id", "doctorId", "date"],
       raw: false,
       nest: true,
-      include: {
-        model: db.Schedule_Detail,
-      },
+      include: [
+        {
+          model: db.Schedule_Detail,
+          attributes: ["id", "currentNumber", "maxNumber"],
+          include: {
+            model: db.Timeframes,
+            attributes: ["nameEN", "nameVI"],
+
+            // through: { attributes: [] }, //khắc phục lỗi dư maping
+          },
+        },
+      ],
     });
-    if (scheduleDetail && scheduleDetail.length > 0) {
+    if (scheduleDetail) {
       return {
         EM: "get data successfully",
         EC: "0",
         DT: scheduleDetail,
       };
-    } else if (scheduleDetail.length === 0) {
+    } else {
       return {
-        EM: "maybe this doctor don't have a schedule...",
+        EM: "maybe this doctor has no schedule for today...",
         EC: "1",
         DT: [],
       };
     }
-    return {
-      EM: "get data fail...",
-      EC: "-1",
-      DT: [],
-    };
   } catch (error) {
     console.log("error from service : >>>", error);
     return {

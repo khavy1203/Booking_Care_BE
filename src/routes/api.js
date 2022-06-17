@@ -31,11 +31,12 @@ const initApiRoutes = (app) => {
 
   //huyên: doctor router
   routes.get("/top-doctor-home", doctorController.getTopDoctorHome);
-  routes.get("/doctor-detail/:id", doctorController.getInfoDoctor);
+  routes.get("/doctor-detail", doctorController.getInfoDoctor);
+  routes.get(`/doctor-modal`, doctorController.getInfoDoctorModal);
 
   //huyên: schedule router
+  routes.get("/schedule-detail", scheduleController.getSchedule);
   routes.post("/schedule/create", scheduleController.createFunc);
-  routes.get("/schedule/get-schedule/:id", scheduleController.getSchedule);
 
   //huyên: timeframe router
   routes.get("/timeframe/read", timeframeController.readFunc);

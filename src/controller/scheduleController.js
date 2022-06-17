@@ -3,8 +3,8 @@ import scheduleApiServices from "../service/scheduleAPIService";
 
 const createFunc = async (req, res) => {
   try {
-    // res.status(200).json(req.body.email);
-    let data = await scheduleApiServices.createSchedule(req.body);
+    let info = { ...req.body, ...req.user };
+    let data = await scheduleApiServices.createSchedule(info);
     res.status(200).json({
       EM: data.EM,
       EC: data.EC,
@@ -22,14 +22,22 @@ const createFunc = async (req, res) => {
 
 const getSchedule = async (req, res) => {
   try {
-    const id = req.params.id;
-    console.log("req.params.id", id);
-    let data = await scheduleApiServices.getSchedule(id);
-    res.status(200).json({
-      EM: data.EM,
-      EC: data.EC,
-      DT: data.DT,
-    });
+    const id = req.query.id;
+    const date = req.query.date;
+    if (id && date) {
+      let data = await scheduleApiServices.getSchedule(id, date);
+      res.status(200).json({
+        EM: data.EM,
+        EC: data.EC,
+        DT: data.DT,
+      });
+    } else {
+      res.status(200).json({
+        EM: "missing id params...",
+        EC: "1",
+        DT: [],
+      });
+    }
   } catch (error) {
     console.log("check getSchedule", error);
     return res.status(500).json({

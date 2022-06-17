@@ -74,6 +74,7 @@ const registerNewUser = async (rawUserData) => {
     };
   }
 };
+
 const loginUser = async (rawUserAccount) => {
   try {
     let user = await db.Users.findOne({

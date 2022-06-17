@@ -15,10 +15,9 @@ const getTopDoctorHome = async (req, res) => {
   }
 };
 
-//lấy thông tin trong bảng users trước, về sau có doctor_info thì thêm vào
 const getInfoDoctor = async (req, res) => {
   try {
-    let doctorId = req.params.id;
+    let doctorId = req.query.id;
 
     if (doctorId) {
       let data = await doctorAPIService.getInfoDoctor(doctorId);
@@ -44,7 +43,36 @@ const getInfoDoctor = async (req, res) => {
   }
 };
 
+const getInfoDoctorModal = async (req, res) => {
+  try {
+    let doctorId = req.query.id;
+
+    if (doctorId) {
+      let data = await doctorAPIService.getInfoDoctorModal(doctorId);
+      res.status(200).json({
+        EC: data.EC,
+        EM: data.EM,
+        DT: data.DT,
+      });
+    } else {
+      return res.status(200).json({
+        EM: "missing id param", //error message
+        EC: "1", //error code
+        DT: "",
+      });
+    }
+  } catch (error) {
+    console.error("check error: ", error);
+    return res.status(500).json({
+      EM: "error from sever", //error message
+      EC: "-1", //error code
+      DT: "",
+    });
+  }
+};
+
 module.exports = {
   getTopDoctorHome: getTopDoctorHome,
   getInfoDoctor,
+  getInfoDoctorModal,
 };

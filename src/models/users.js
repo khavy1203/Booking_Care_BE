@@ -30,6 +30,12 @@ module.exports = (sequelize, DataTypes) => {
       Users.belongsTo(models.Group, { foreignKey: "groupId" });
 
       Users.belongsTo(models.Clinics, { foreignKey: "clinicId" });
+
+      //Huyên: định nghĩa lại quan hệ n-n
+      Users.belongsToMany(models.Specialties, {
+        through: "Doctor_Specialty",
+        foreignKey: "doctorId",
+      });
     }
   }
   Users.init(

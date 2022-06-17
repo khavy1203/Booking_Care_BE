@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
       Clinics.belongsTo(models.Provinces, {
         foreignKey: "provinceId",
       });
+
+      Clinics.belongsToMany(models.Specialties, {
+        through: "Clinic_Specialty",
+        foreignKey: "clinicId",
+      });
     }
   }
   Clinics.init(

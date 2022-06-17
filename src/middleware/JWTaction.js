@@ -12,11 +12,14 @@ const nonSecurePaths = [
   "/specialty/create",
   "/top-doctor-home",
   "/timeframe/read",
-  "/schedule/create",
 ]; //mảng này chứa các phần sẽ sẽ không được check quyền
 
 //huyên
-const nonSecureDetailPaths = [`/doctor-detail/`, "/schedule/get-schedule/"]; //mảng này chứa các đường dẫn chi tiết không cần check quyền
+const pathForPatientPage = [
+  `/doctor-detail`,
+  "/schedule-detail",
+  "/doctor-modal",
+]; //mảng này chứa các path cho các trang mà khách vào xem nên không cần check quyền
 //
 
 const createJWT = (payload) => {
@@ -56,7 +59,7 @@ const extractToken = (req) => {
 
 //huyên
 function checkNoneSecureDetailPaths(path) {
-  for (let item of nonSecureDetailPaths) {
+  for (let item of pathForPatientPage) {
     if (path.includes(item)) return true;
   }
   return false;
@@ -120,7 +123,7 @@ const checkUserPermission = (req, res, next) => {
       return res.status(403).json({
         EC: -1,
         DT: "",
-        EM: "You dont permission to access this resource",
+        EM: "You don't have permission to access this resource",
       });
     }
     let canAccess = roles.some(
@@ -133,7 +136,7 @@ const checkUserPermission = (req, res, next) => {
       return res.status(403).json({
         EC: -1,
         DT: "",
-        EM: "You dont permission to access this resource",
+        EM: "You don't have permission to access this resource",
       });
     }
   } else {
