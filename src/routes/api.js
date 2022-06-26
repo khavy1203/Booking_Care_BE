@@ -10,6 +10,8 @@ import scheduleController from "../controller/scheduleController";
 
 import roleController from "../controller/roleController";
 import passport from "passport";
+
+import bookingController from "../controller/bookingController";
 require("dotenv").config();
 const routes = express.Router();
 
@@ -48,6 +50,9 @@ const initApiRoutes = (app) => {
   routes.delete("/role/delete", roleController.deleteFunc);
   routes.get("/role/by-group/:groupId", roleController.getRoleByGroup);
   routes.post("/role/assign-to-group", roleController.assignRoleToGroup);
+
+  //huyên: booking routes
+  routes.post("/booking/create", bookingController.createFunc);
 
   //auth route
   //google

@@ -1,17 +1,5 @@
 "use strict";
 module.exports = {
-  // introductionVI: DataTypes.STRING,
-  //   noteVI: DataTypes.STRING,
-  //   paymentVI: DataTypes.STRING,
-  //   descriptionHTLM_VI: DataTypes.TEXT,
-  //   descriptionMarkdown_VI: DataTypes.TEXT,
-  //   introductionEN: DataTypes.STRING,
-  //   noteEN: DataTypes.STRING,
-  //   paymentEN: DataTypes.STRING,
-  //   descriptionHTLM_EN: DataTypes.TEXT,
-  //   descriptionMarkdown_EN: DataTypes.TEXT,
-  //   price: DataTypes.STRING,
-  //   doctorId: DataTypes.INTEGER,
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("Doctorinfo", {
       id: {
@@ -39,6 +27,9 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+      degree_VI: {
+        type: Sequelize.STRING,
+      },
 
       introductionEN: {
         type: Sequelize.STRING,
@@ -57,6 +48,9 @@ module.exports = {
       descriptionMarkdown_EN: {
         type: Sequelize.TEXT,
         allowNull: false,
+      },
+      degree_EN: {
+        type: Sequelize.STRING,
       },
 
       price: {

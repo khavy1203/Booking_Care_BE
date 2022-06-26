@@ -19,11 +19,15 @@ module.exports = (sequelize, DataTypes) => {
       paymentVI: DataTypes.STRING,
       descriptionHTLM_VI: DataTypes.TEXT,
       descriptionMarkdown_VI: DataTypes.TEXT,
+      degree_VI: DataTypes.STRING,
+
       introductionEN: DataTypes.STRING,
       noteEN: DataTypes.STRING,
       paymentEN: DataTypes.STRING,
       descriptionHTLM_EN: DataTypes.TEXT,
       descriptionMarkdown_EN: DataTypes.TEXT,
+      degree_EN: DataTypes.STRING,
+
       price: DataTypes.INTEGER,
       doctorId: DataTypes.INTEGER,
     },

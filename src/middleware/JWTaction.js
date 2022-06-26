@@ -12,6 +12,7 @@ const nonSecurePaths = [
   "/specialty/create",
   "/top-doctor-home",
   "/timeframe/read",
+  "/booking/create",
 ]; //mảng này chứa các phần sẽ sẽ không được check quyền
 
 //huyên

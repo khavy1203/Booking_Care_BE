@@ -1,9 +1,5 @@
 "use strict";
 module.exports = {
-  // scheduleId: DataTypes.INTEGER,
-  //     timeframeId: DataTypes.INTEGER,
-  //     currentNumber: DataTypes.INTEGER,
-  //     maxNumber: DataTypes.INTEGER,
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("Schedule_Detail", {
       id: {

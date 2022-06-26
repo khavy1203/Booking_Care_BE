@@ -51,6 +51,8 @@ module.exports = (sequelize, DataTypes) => {
       clinicId: DataTypes.INTEGER,
       googleId: DataTypes.STRING,
       githubId: DataTypes.STRING,
+      facebookId: DataTypes.STRING,
+      active: DataTypes.BOOLEAN,
     },
     {
       sequelize,
