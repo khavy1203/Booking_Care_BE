@@ -9,9 +9,12 @@ import timeframeController from "../controller/timefameController";
 import scheduleController from "../controller/scheduleController";
 
 import roleController from "../controller/roleController";
-import passport from "passport";
 
+import clinicController from "../controller/clinicController";
+import provinceController from "../controller/provinceController";
+import passport from "passport";
 import bookingController from "../controller/bookingController";
+
 require("dotenv").config();
 const routes = express.Router();
 
@@ -27,6 +30,8 @@ const initApiRoutes = (app) => {
   routes.post("/user/create", userController.createFunc);
   routes.put("/user/update", userController.updateFunc);
   routes.delete("/user/delete", userController.deleteFunc);
+  routes.get("/user/account", userController.getUserAccount);
+
   // routes.get("/account", userController.getUserAccount);
 
   routes.get("/group/read", groupController.readFunc);
@@ -43,7 +48,6 @@ const initApiRoutes = (app) => {
   //huyên: timeframe router
   routes.get("/timeframe/read", timeframeController.readFunc);
 
-  //role routes
   //role router
   routes.post("/role/create", roleController.createFunc);
   routes.get("/role/read", roleController.readFunc);
@@ -82,6 +86,15 @@ const initApiRoutes = (app) => {
   // routes.post("/specialty/create", specialtyController.createSpecialty);
   // routes.put("/specialty/update", specialtyController.updateSpecialty);
   // routes.delete("/specialty/delete", specialtyController.deleteSpecialty);
+
+  //clinic
+  routes.get("/clinic/read", clinicController.readFunc);
+  routes.post("/clinic/create", clinicController.createFunc);
+  routes.put("/clinic/update", clinicController.updateFunc);
+  routes.delete("/clinic/delete", clinicController.deleteFunc);
+
+  //province
+  routes.get("/provinces/read", provinceController.readFunc);
 
   return app.use("/api/v1/", routes);
 };

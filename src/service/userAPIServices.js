@@ -4,6 +4,7 @@ import {
   checkPhone,
   hashUserPassword,
 } from "./loginRegisterService.js";
+import jwtAction from "../middleware/JWTaction";
 
 const getUserWithPagination = async (page, limit) => {
   try {
@@ -20,6 +21,7 @@ const getUserWithPagination = async (page, limit) => {
         "phone",
         "groupId",
         "clinicId", //Huyên: thêm cột clinicId
+        "image",
       ],
       include: {
         model: db.Group,
@@ -61,6 +63,7 @@ const getAllUsers = async () => {
         "phone",
         "groupId",
         "clinicId", //Huyên: thêm cột clinicId
+        "image",
       ],
       include: {
         model: db.Group,
@@ -187,11 +190,40 @@ const deleteUser = async (id) => {
     };
   }
 };
+const getUserAccount = async (jwtCookies) => {
+  try {
+    let decode = jwtAction.verifyToken(jwtCookies);
 
+    if (decode) {
+      console.log("check decode >>>", decode);
+      return {
+        EM: "Get user successfully",
+        EC: 0,
+        DT: {
+          token: jwtCookies,
+          decode: decode,
+        },
+      };
+    } else {
+      return {
+        EM: "Overtime JWT ",
+        EC: 1,
+        DT: [],
+      };
+    }
+  } catch (e) {
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
 module.exports = {
   getAllUsers,
   createUser,
   updateUser,
   deleteUser,
   getUserWithPagination,
+  getUserAccount,
 };

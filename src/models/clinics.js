@@ -9,25 +9,32 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Clinics.hasMany(models.Users, { foreignKey: "clinicId" });
+      // Clinics.hasMany(models.Users, { foreignKey: "clinicId" });
 
-      Clinics.hasMany(models.Clinic_Specialty, {
-        foreignKey: "clinicId",
-      });
+      // Clinics.hasMany(models.Clinic_Specialty, {
+      //   foreignKey: "clinicId",
+      // });
+
+      // Clinics.belongsTo(models.Provinces, {
+      //   foreignKey: "provinceId",
+      // });
+
+      // Clinics.belongsToMany(models.Specialties, {
+      //   through: "Clinic_Specialty",
+      //   foreignKey: "clinicId",
+      // });
 
       Clinics.belongsTo(models.Provinces, {
         foreignKey: "provinceId",
       });
-
-      Clinics.belongsToMany(models.Specialties, {
-        through: "Clinic_Specialty",
+      Clinics.hasMany(models.Users, {
         foreignKey: "clinicId",
       });
     }
   }
   Clinics.init(
     {
-      image: DataTypes.STRING,
+      image: DataTypes.BLOB("long"),
 
       nameVI: DataTypes.STRING,
       addressVI: DataTypes.STRING,

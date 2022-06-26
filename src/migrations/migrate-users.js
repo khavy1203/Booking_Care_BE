@@ -1,14 +1,5 @@
 "use strict";
 module.exports = {
-  // email: DataTypes.STRING,
-  //     password: DataTypes.STRING,
-  //     firstName: DataTypes.STRING,
-  //     lastName: DataTypes.STRING,
-  //     address: DataTypes.STRING,
-  //     phone: DataTypes.STRING,
-  //     image: DataTypes.BLOB('long'),
-  //     genderId: DataTypes.INTEGER
-  //    clinicId: DataTypes.INTEGER,
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("Users", {
       id: {

@@ -1,4 +1,5 @@
 import userApiServices from "../service/userAPIServices";
+import jwt from "jsonwebtoken";
 const readFunc = async (req, res) => {
   try {
     if (req.query.page && req.query.limit) {
@@ -81,16 +82,31 @@ const deleteFunc = async (req, res) => {
   }
 };
 const getUserAccount = async (req, res) => {
-  return res.status(200).json({
-    EM: "ok", //error
-    EC: 0,
-    DT: {
-      access_token: req.token,
-      groupWithRoles: req.user.groupWithRoles,
-      email: req.user.userEmail,
-      username: req.user.userName,
-    },
-  });
+  try {
+    let data = {
+      EC: "",
+      EM: "2",
+      DT: {},
+    };
+
+    let cookies = req.cookies; //lấy cookie từ client
+    if (cookies && cookies.jwt) {
+      let token = cookies && cookies.jwt ? cookies.jwt : tokenFromHeader;
+      data = await userApiServices.getUserAccount(token);
+    }
+    return res.status(200).json({
+      EM: data.EM, //error
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (e) {
+    console.error("check error: ", e);
+    return res.status(500).json({
+      EM: "error from sever", //error message
+      EC: "-1", //error code
+      DT: "",
+    });
+  }
 };
 module.exports = {
   readFunc,

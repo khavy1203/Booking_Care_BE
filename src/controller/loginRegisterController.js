@@ -92,12 +92,12 @@ const handleLoginPPGoogleSuccess = async (req, res) => {
           httpOnly: true,
           maxAge: 24 * 60 * 60 * 1000,
         }); //gửi kèm cookies về phía client khi đăng nhập thành công
-        // res.status(200).json({
-        //     EM: data.EM,
-        //     EC: data.EC,
-        //     DT: data.DT
-        // });
+        // if (data.DT.groupId !== 3) {
         res.redirect(process.env.REACT_URL + "/system/user-manage");
+        // } else {
+        //   res.redirect(process.env.REACT_URL + "/home");
+
+        // }
       }
     } else {
       res.status(200).json({
@@ -124,13 +124,12 @@ const handleLoginPPGithubSuccess = async (req, res) => {
         res.cookie("jwt", data.DT.access_token, {
           httpOnly: true,
           maxAge: 24 * 60 * 60 * 1000,
-        }); //gửi kèm cookies về phía client khi đăng nhập thành công
-        // res.status(200).json({
-        //     EM: data.EM,
-        //     EC: data.EC,
-        //     DT: data.DT
-        // });
-        res.redirect(process.env.REACT_URL + "/system/user-manage");
+        });
+        if (data.DT.groupId !== 3) {
+          res.redirect(process.env.REACT_URL + "/system/user-manage");
+        } else {
+          res.redirect(process.env.REACT_URL + "/home");
+        }
       }
     } else {
       res.status(200).json({
