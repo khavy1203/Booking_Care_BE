@@ -31,14 +31,11 @@ module.exports = {
       genderId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        defaultValue: 1,
       },
       groupId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-      },
-      clinicId: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
       },
       googleId: {
         type: Sequelize.STRING,
@@ -53,8 +50,8 @@ module.exports = {
         allowNull: true,
       },
       active: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
       },
       createdAt: {
         type: Sequelize.DATE,

@@ -5,6 +5,7 @@
         "database": "bookingcare",
         "host": "127.0.0.1",
         "dialect": "mysql",
+        "timezone": "+08:00",
         "define": {
             "freezeTableName": true
         }

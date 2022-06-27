@@ -14,6 +14,7 @@ module.exports = {
       //Huyên đã đổi date sang string
       date: {
         type: Sequelize.STRING,
+        // type: Sequelize.DATE,
       },
       doctorId: {
         type: Sequelize.INTEGER,

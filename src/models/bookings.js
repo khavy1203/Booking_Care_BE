@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       patientId: DataTypes.INTEGER,
       schedule_detail_id: DataTypes.INTEGER,
       date: DataTypes.STRING,
+      // date: DataTypes.DATE,
     },
     {
       sequelize,

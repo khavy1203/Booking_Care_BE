@@ -31,6 +31,7 @@ module.exports = {
       },
       date: {
         type: Sequelize.STRING,
+        // type: Sequelize.DATE,
       },
       createdAt: {
         type: Sequelize.DATE,

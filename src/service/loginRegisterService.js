@@ -60,7 +60,6 @@ const registerNewUser = async (rawUserData) => {
       phone: rawUserData.phone,
       genderId: 1, //1 nam, 2 là nữ
       groupId: 3, //3 là khách hàng, 2 là admin,  1 là bác sĩ
-      clinicId: null,
     });
     return {
       EM: "Create new user successfully ",

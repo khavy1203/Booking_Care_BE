@@ -20,7 +20,6 @@ const getUserWithPagination = async (page, limit) => {
         "genderId",
         "phone",
         "groupId",
-        "clinicId", //Huyên: thêm cột clinicId
         "image",
       ],
       include: {
@@ -62,7 +61,6 @@ const getAllUsers = async () => {
         "genderId",
         "phone",
         "groupId",
-        "clinicId", //Huyên: thêm cột clinicId
         "image",
       ],
       include: {
@@ -138,8 +136,8 @@ const updateUser = async (user) => {
         genderId: user.genderId,
         phone: user.phone,
         groupId: user.groupId,
-        clinicId: user.clinicId, //Huyên: thêm cột clinicId
         image: user.image, //Huyên: thêm cột image để cập nhật avatar
+        active: user.active, //Huyên: thêm cột active để cập nhật trạng thái hoạt động
       });
       await findUser.save();
       return {
