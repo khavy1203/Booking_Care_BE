@@ -20,6 +20,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      clinicId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       createdAt: {
         type: Sequelize.DATE,
       },

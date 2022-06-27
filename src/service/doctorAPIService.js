@@ -15,9 +15,10 @@ const getTopDoctorHome = (limit) => {
           model: db.Group,
           attributes: ["name"],
           where: {
-            name: {
-              [Op.notIn]: ["admin", "patient"],
-            },
+            id: 2,
+            // name: {
+            //   [Op.notIn]: ["admin", "patient"],
+            // },
           },
         },
         raw: true,

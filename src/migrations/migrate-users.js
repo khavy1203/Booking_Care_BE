@@ -53,6 +53,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
+      clinicId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
       createdAt: {
         type: Sequelize.DATE,
       },

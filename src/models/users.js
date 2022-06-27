@@ -18,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "doctorId",
       });
 
-      Users.hasOne(models.Clinics, {
-        foreignKey: "doctorId",
+      Users.belongsTo(models.Clinics, {
+        foreignKey: "clinicId",
       });
 
       Users.hasOne(models.Doctorinfo, {
@@ -56,6 +56,7 @@ module.exports = (sequelize, DataTypes) => {
       githubId: DataTypes.STRING,
       facebookId: DataTypes.STRING,
       active: DataTypes.INTEGER,
+      clinicId: DataTypes.INTEGER,
     },
     {
       sequelize,

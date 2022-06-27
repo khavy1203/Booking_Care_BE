@@ -3,6 +3,18 @@ import db from "../models/index.js"; //connectdb
 import { Op } from "sequelize";
 import _ from "lodash";
 
+//kiểm tra bác sĩ có active chưa
+let isActive = (user) => {
+  if (user.active === 0) return false;
+  return true;
+};
+
+//kiểm tra bác sĩ có clinic ko
+let hasClinic = (user) => {
+  if (!user.clinicId) return false;
+  return true;
+};
+
 const createSchedule = async (data) => {
   try {
     //tìm user là bác sĩ gửi request
@@ -10,14 +22,33 @@ const createSchedule = async (data) => {
       where: { email: data.email },
     });
 
-    //kiểm tra có đúng là bác sĩ gửi request không
+    //kiểm tra user gửi request có đúng là bác sĩ không
     if (user && user.groupId === data.groupWithRoles.id) {
+      //kiểm tra bác sĩ có active chưa
+      if (!isActive(user)) {
+        return {
+          EM: "doctor is not active",
+          EC: "1",
+          DT: "",
+        };
+      }
+
+      //kiểm tra bác sĩ có clinic ko
+      if (!hasClinic(user)) {
+        return {
+          EM: "doctor don't have clinic",
+          EC: "2",
+          DT: "",
+        };
+      }
+
       //lấy ra schedule cần tìm thuộc 1 ngày của bác sĩ
       let foundSchedule = await db.Schedules.findOne({
         where: {
           [Op.and]: {
             date: data.date,
             doctorId: user.id,
+            clinicId: user.clinicId,
           },
         },
       });
@@ -95,6 +126,7 @@ const createSchedule = async (data) => {
         let schedule = await db.Schedules.create({
           date: data.date,
           doctorId: user.id,
+          clinicId: user.clinicId,
         });
 
         if (schedule) {
@@ -136,10 +168,10 @@ const createSchedule = async (data) => {
   }
 };
 
-const getSchedule = async (doctorId, date) => {
+const getSchedule = async (doctorId, date, clinicId) => {
   try {
     let scheduleDetail = await db.Schedules.findOne({
-      where: { doctorId: doctorId, date: date },
+      where: { doctorId: doctorId, date: date, clinicId: clinicId },
       attributes: ["id", "doctorId", "date"],
       raw: false,
       nest: true,

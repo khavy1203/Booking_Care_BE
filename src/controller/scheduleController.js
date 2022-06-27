@@ -24,8 +24,9 @@ const getSchedule = async (req, res) => {
   try {
     const id = req.query.id;
     const date = req.query.date;
+    const clinicId = req.query.clinicId;
     if (id && date) {
-      let data = await scheduleApiServices.getSchedule(id, date);
+      let data = await scheduleApiServices.getSchedule(id, date, clinicId);
       res.status(200).json({
         EM: data.EM,
         EC: data.EC,
