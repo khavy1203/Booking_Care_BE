@@ -33,9 +33,9 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "patientId",
       });
 
-      Users.hasMany(models.Schedules, {
-        foreignKey: "doctorId",
-      });
+      // Users.hasMany(models.Schedules, {
+      //   foreignKey: "doctorId",
+      // });
 
       Users.belongsTo(models.Genders, { foreignKey: "genderId" });
 
@@ -49,7 +49,8 @@ module.exports = (sequelize, DataTypes) => {
       username: DataTypes.STRING,
       address: DataTypes.STRING,
       phone: DataTypes.STRING,
-      image: DataTypes.BLOB("long"),
+      // image: DataTypes.BLOB("long"),
+      image: DataTypes.STRING,
       genderId: DataTypes.INTEGER,
       groupId: DataTypes.INTEGER,
       googleId: DataTypes.STRING,

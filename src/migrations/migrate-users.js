@@ -25,8 +25,11 @@ module.exports = {
       phone: {
         type: Sequelize.STRING,
       },
+      // image: {
+      //   type: Sequelize.BLOB("long"),
+      // },
       image: {
-        type: Sequelize.BLOB("long"),
+        type: Sequelize.STRING,
       },
       genderId: {
         type: Sequelize.INTEGER,

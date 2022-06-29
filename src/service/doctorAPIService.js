@@ -56,7 +56,7 @@ const getInfoDoctor = async (id) => {
       nest: true,
     });
     if (doctor && doctor.image) {
-      doctor.image = new Buffer(doctor.image, "base64").toString("binary");
+      // doctor.image = new Buffer(doctor.image, "base64").toString("binary");
       return {
         EC: "0",
         EM: "Found the doctor!!!",

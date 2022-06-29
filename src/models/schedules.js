@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "scheduleId",
       });
 
-      Schedules.belongsTo(models.Users, { foreignKey: "doctorId" });
+      // Schedules.belongsTo(models.Users, { foreignKey: "doctorId" });
 
       Schedules.belongsTo(models.Clinics, { foreignKey: "clinicId" });
 
