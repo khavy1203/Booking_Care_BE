@@ -13,6 +13,13 @@ const hashUserPassword = (userPassword) => {
 const compareUserPassword = (userPassword, hashPassword) => {
   return bcryptjs.compareSync(userPassword, hashPassword);
 };
+
+const hashUserEmail = (usermail) => {
+  return bcryptjs.hashSync(usermail, salt);
+};
+const compareEmail = (email, hashEmail) => {
+  return bcryptjs.compareSync(email, hashEmail);
+};
 const checkEmail = async (userEmail) => {
   let isExist = await db.Users.findOne({
     where: { email: userEmail },
@@ -86,7 +93,7 @@ const loginUser = async (rawUserAccount) => {
       include: [
         {
           model: db.Clinics,
-          attributes: ["id", "status"],
+          attributes: ["id", "nameVI", "addressVI", "provinceId", "districtId", "wardId"],
           raw: true,
           nest: true
         },
@@ -114,7 +121,11 @@ const loginUser = async (rawUserAccount) => {
           username: user.username,
           groupWithRoles,
           Clinic: user.Clinic,
-          Specialty: user.Specialty
+          Specialty: user.Specialty,
+          genderId: user.genderId,
+          phone: user.phone,
+          address: user.address,
+          image: user.image
         };
         console.log("check payload :>>>", payload);
         let token = createJWT(payload);
@@ -126,6 +137,11 @@ const loginUser = async (rawUserAccount) => {
             groupWithRoles: groupWithRoles,
             email: user.email,
             username: user.username,
+            genderId: user.genderId,
+            phone: user.phone,
+            address: user.address,
+            image: user.image
+
           },
         };
       }
@@ -150,4 +166,6 @@ module.exports = {
   checkEmail,
   checkPhone,
   hashUserPassword,
+  hashUserEmail,
+  compareEmail
 };

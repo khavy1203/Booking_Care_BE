@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   Doctorinfo.init(
     {
-      imageDoctor: DataTypes.STRING,
 
       introductionVI: DataTypes.STRING,
       noteVI: DataTypes.STRING,
@@ -35,9 +34,6 @@ module.exports = (sequelize, DataTypes) => {
 
       active: DataTypes.INTEGER,//=status
       linkfile: DataTypes.STRING,
-      provinceId: DataTypes.INTEGER,//cần kiểm tra kĩ địa chỉ của bác sĩ
-      districtId: DataTypes.INTEGER,
-      wardId: DataTypes.INTEGER,
     },
     {
       sequelize,

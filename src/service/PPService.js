@@ -14,13 +14,17 @@ const loginPPGoogle = async (userraw) => {
       include: [
         {
           model: db.Clinics,
-          attributes: ["id", "status"]
+          attributes: ["id", "nameVI", "addressVI", "provinceId", "districtId", "wardId"],
+          raw: true,
+          nest: true
         },
         {
           model: db.Specialties,
-          attributes: ["id", "nameVI"]
-        }],
-
+          attributes: ["id", "nameVI"],
+          raw: true,
+          nest: true
+        },
+      ],
       raw: true,
       nest: true
     });
@@ -31,7 +35,12 @@ const loginPPGoogle = async (userraw) => {
       username: user.username,
       groupWithRoles,
       Clinic: user.Clinic,
-      Specialty: user.Specialty
+      Specialty: user.Specialty,
+      genderId: user.genderId,
+      phone: user.phone,
+      address: user.address,
+      image: user.image
+
     };
     console.log("check payload :>>>", payload);
     let token = createJWT(payload);
@@ -44,6 +53,11 @@ const loginPPGoogle = async (userraw) => {
         email: user.email,
         username: user.username,
         groupId: user.groupId,
+        genderId: user.genderId,
+        phone: user.phone,
+        address: user.address,
+        image: user.image
+
       },
     };
   } catch (e) {
@@ -64,16 +78,17 @@ const loginPPGithub = async (userraw) => {
       include: [
         {
           model: db.Clinics,
-          attributes: ["id", "status"],
-          through: { attributes: [] }//khắc phục lỗi dư maping
-
+          attributes: ["id", "nameVI", "addressVI", "provinceId", "districtId", "wardId"],
+          raw: true,
+          nest: true
         },
         {
           model: db.Specialties,
           attributes: ["id", "nameVI"],
-          through: { attributes: [] }//khắc phục lỗi dư maping
-
-        }],
+          raw: true,
+          nest: true
+        },
+      ],
       raw: true,
       nest: true
     });
@@ -83,7 +98,12 @@ const loginPPGithub = async (userraw) => {
       username: user.username,
       groupWithRoles,
       Clinic: user.Clinic,
-      Specialty: user.Specialty
+      Specialty: user.Specialty,
+      genderId: user.genderId,
+      phone: user.phone,
+      address: user.address,
+      image: user.image
+
     };
     console.log("check payload :>>>", payload);
     let token = createJWT(payload);
@@ -97,6 +117,11 @@ const loginPPGithub = async (userraw) => {
         username: user.username,
         groupId: user.groupId,
         clinicId: user.clinicId,
+        genderId: user.genderId,
+        phone: user.phone,
+        address: user.address,
+        image: user.image
+
       },
     };
   } catch (e) {

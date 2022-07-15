@@ -10,19 +10,17 @@ const nonSecurePaths = [
   "/github",
   "/auth/github/callback",
   "/user/account",
-  // "/specialty/create",
+  '/user/forgotPasswordUser',
+  '/reset-password',
+
   "/top-doctor-home",
   "/timeframe/read",
   "/booking/create",
-]; //mảng này chứa các phần sẽ sẽ không được check quyền
-
-//huyên
-const pathForPatientPage = [
   `/doctor-detail`,
   "/schedule-detail",
   "/doctor-modal",
-]; //mảng này chứa các path cho các trang mà khách vào xem nên không cần check quyền
-//
+]; //mảng này chứa các phần sẽ sẽ không được check quyền
+
 
 const createJWT = (payload) => {
   let key = process.env.JWT_SECRET;
@@ -61,26 +59,29 @@ const extractToken = (req) => {
 
 //huyên
 function checkNoneSecureDetailPaths(path) {
-  for (let item of pathForPatientPage) {
-    if (path.includes(item)) return true;
+  for (let item of nonSecurePaths) {
+    if (item === path) return true;
   }
   return false;
 }
 //
 
 const checkUserJwt = (req, res, next) => {
+
   //xác thực trước khi gửi xuống
+  let check = checkNoneSecureDetailPaths(req.path);
+  console.log("check được phép bỏ qua hay không , ", check, " check path hiện tại >>", req.path)
   if (
-    nonSecurePaths.includes(req.path) ||
-    //huyên
-    checkNoneSecureDetailPaths(req.path)
-    //
+    check
   )
     return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì
 
   let cookies = req.cookies; //lấy cookie từ client
   let tokenFromHeader = extractToken(req);
-  if ((cookies && cookies.jwt) || tokenFromHeader) {
+  console.log("check cooke và tooken từ header>>>", JSON.stringify(cookies.jwt), tokenFromHeader)
+  // if ((cookies && JSON.stringify(cookies.jwt) !== undefined) || tokenFromHeader !== null) {
+  //tạm thời app này chưa set header
+  if ((cookies && cookies.jwtd) || tokenFromHeader) {
     //nếu tồn tại cookie đã được gửi trước đó
     let token = cookies && cookies.jwt ? cookies.jwt : tokenFromHeader;
     let decode = verifyToken(token);
@@ -112,11 +113,7 @@ const checkUserJwt = (req, res, next) => {
 const checkUserPermission = (req, res, next) => {
   // xác thực quyền truy cập trước khi gửi đi
   if (
-    nonSecurePaths.includes(req.path) ||
-    //huyen
-    checkNoneSecureDetailPaths(req.path) ||
-    //
-    req.path === "/account"
+    checkNoneSecureDetailPaths(req.path)
   )
     return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì
   if (req.user) {
@@ -124,7 +121,6 @@ const checkUserPermission = (req, res, next) => {
     if (email === "admin@gmail.com") return next();
     let roles = req.user.groupWithRoles.Roles; //lấy quyền của các roles
     let currentUrl = req.path; //lấy link truy cập
-    console.log("check req.path", currentUrl);
     if (!roles || roles.length == 0) {
       return res.status(403).json({
         EC: -1,
@@ -135,6 +131,7 @@ const checkUserPermission = (req, res, next) => {
     let canAccess = roles.some(
       (item) => item.url === currentUrl || currentUrl.includes(item.url)
     ); //duyệt hết phần tử trả ra trạng thái true or false
+    // canAccess = true;// tạm dùng cho demo trên gihub
     if (canAccess === true) {
       next(); // nếu đúng thì được phép thực hiện tiếp cái sau
     } else {

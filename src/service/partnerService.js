@@ -16,6 +16,14 @@ const registerClinic = async (Clinic) => {
     try {
         // Clinic.status = 2; // status 1 là xác nhận hoạt động, 2 là pending
         console.log("check clinic >>>", Clinic);
+        let findUser = await db.Users.findOne({ where: { email: Clinic.emailUserOfClinicRegister } });
+        if (findUser && findUser.groupId !== 3) {
+            return {
+                EM: "Bạn không được phép đăng ký phòng khám.",
+                EC: 1,
+                DT: "",
+            };
+        }
         let createClinic = await db.Clinics.create({
             nameVI: Clinic.name,
             addressVI: Clinic.address,
@@ -28,7 +36,6 @@ const registerClinic = async (Clinic) => {
         })
         console.log("check createClinic >>>", createClinic.dataValues.id);
         if (createClinic.dataValues.id) {
-            let findUser = await db.Users.findOne({ where: { email: Clinic.emailUserOfClinicRegister } });
             if (findUser) {
                 findUser.set({
                     clinicId: createClinic.dataValues.id,
@@ -75,11 +82,18 @@ const registerDoctorClinic = async (dataDoctors) => {
                         specialtyId: +child.idSpecialty
                     });// tạo user
                     if (createNewUser) {
+
                         let objEmail = {
                             email: child.doctorEmail,
                             password: password
                         }
+                        await db.Doctorinfo.create({
+                            doctorId: createNewUser.dataValues.id,
+                            active: 2// 1 hoạt động, 2 là tạm dứng
+                        })
                         await sendEmailPassword(objEmail);
+
+
                     }
 
                 }
@@ -167,12 +181,22 @@ const getDoctorsOfClinic = async (id) => {
             include: [{
                 model: db.Users,
                 attributes: { exclude: ['password', 'googleId', 'githubId', 'facebookId'] },
-                include: {
+                include: [{
+
                     model: db.Specialties,
                     attributes: ["id", "nameVI"],
-
+                    order: [
+                        ['id', 'DESC'],
+                    ],
                 },
+                {
 
+                    model: db.Doctorinfo,
+                    order: [
+                        ['id', 'DESC'],
+                    ],
+                },
+                ],
             }],
             raw: true
         });
@@ -199,10 +223,81 @@ const getDoctorsOfClinic = async (id) => {
         };
     }
 };
+
+const deleteDoctorOfClinic = async (dataDoctors) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log("check data Doctor >>", dataDoctors)
+            if (dataDoctors['Users.id']) {
+                let doctor = await db.Users.findOne({ where: { id: +dataDoctors['Users.id'] } });
+                await doctor.destroy();
+
+            }
+            if (dataDoctors['Users.Doctorinfo.id']) {
+                let doctorInfor = await db.Doctorinfo.findOne({ where: { id: +dataDoctors['Users.Doctorinfo.id'] } })
+                await doctorInfor.destroy();
+
+            }
+            resolve({
+                EM: "Delete successfully",
+                EC: "0",
+                DT: [],
+            });
+        } catch (error) {
+            reject({
+
+                EM: "Error from to sever",
+                EC: -1,
+                DT: [],
+
+            });
+        }
+    });
+}
+
+const updateDoctorOfClinic = async (dataDoctors) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log("check data Doctor >>", dataDoctors)
+            let findUser = await db.Users.findOne({ where: { id: dataDoctors.idUser } });
+            let finDoctorInfo = await db.Doctorinfo.findOne({ where: { id: dataDoctors.idDoctorInfo } });
+
+
+            if (findUser) {
+                findUser.set({
+                    specialtyId: dataDoctors.specialIdUser
+                });
+                await findUser.save();
+            }
+            if (finDoctorInfo) {
+                console.log("check doctorinfo >>>", finDoctorInfo)
+                finDoctorInfo.set(
+                    dataDoctors);
+                let query = await finDoctorInfo.save();
+                console.log("check qurery doctorinfo>>", query)
+            }
+            resolve({
+                EM: "Update doctor successfully",
+                EC: "0",
+                DT: []
+            });
+        } catch (error) {
+            reject({
+                EM: "Error from to sever",
+                EC: -1,
+                DT: [],
+            });
+        }
+    });
+}
 module.exports = {
     registerClinic,
     registerDoctorClinic,
     getSatusOfClinic,
     getSpecialty,
-    getDoctorsOfClinic
+    getDoctorsOfClinic,
+    deleteDoctorOfClinic,
+    updateDoctorOfClinic
 };

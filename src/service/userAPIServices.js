@@ -3,9 +3,11 @@ import {
   checkEmail,
   checkPhone,
   hashUserPassword,
+  hashUserEmail,
+  compareEmail
 } from "./loginRegisterService.js";
 import jwtAction from "../middleware/JWTaction";
-import { sendEmailPassword } from "./emailService";
+import { sendEmailPassword, sendEmailResetPassword } from "./emailService";
 
 const makeid = (length) => {
   var text = "";
@@ -236,6 +238,105 @@ const getUserAccount = async (jwtCookies) => {
     };
   }
 };
+
+const updateInforUser = async (user) => {
+  try {
+    console.log("check user", user);
+    let findUser = await db.Users.findOne({ where: { email: user.email } });
+    if (findUser) {
+      findUser.set(user);
+      await findUser.save();
+      return {
+        EM: "Cập nhật thành công, vui lòng đăng nhập lại",
+        EC: "0",
+        DT: "",
+      };
+    }
+    return {
+      EM: "Not find or something error",
+      EC: "1",
+      DT: "",
+    };
+  } catch (e) {
+    console.log("error from service : >>>", e);
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
+const forgotPasswordUser = async (user) => {
+  try {
+    console.log("check user", user);
+    let findUser = await db.Users.findOne({
+      where: { email: user.email },
+      raw: true
+    });
+    if (findUser) {
+      console.log("check findUser", findUser.id);
+      let hashEmail = hashUserEmail(user.email);
+      let link = `${process.env.REACT_URL}/reset-password?id=${findUser.id}&email=${hashEmail}`;
+      let objEmail = {
+        email: user.email,
+        link
+      }
+      await sendEmailResetPassword(objEmail);
+
+    }
+
+    return {
+      EM: "Vui lòng kiểm tra mail để thay đổi mật khẩu !",
+      EC: 0,
+      DT: "",
+    };
+  } catch (e) {
+    console.log("error from service : >>>", e);
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
+
+const resetPassword = async (user) => {
+  try {
+
+    let findUser = await db.Users.findOne({
+      where: { id: user.id }
+    });
+    let isCorrectEmail = compareEmail(
+      findUser.dataValues.email,
+      user.hashEmail
+    );
+    if (isCorrectEmail) {
+
+      findUser.set({
+        password: hashUserPassword(user.dataNewPassword)
+      });
+      await findUser.save();
+      return {
+        EM: "Cập nhật mật khẩu mới thành công",
+        EC: 0,
+        DT: "",
+      };
+
+    }
+    return {
+      EM: "Cập nhật mật khẩu mới thất bại",
+      EC: 1,
+      DT: "",
+    };
+  } catch (e) {
+    console.log("error from service : >>>", e);
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
 module.exports = {
   getAllUsers,
   createUser,
@@ -243,4 +344,7 @@ module.exports = {
   deleteUser,
   getUserWithPagination,
   getUserAccount,
+  updateInforUser,
+  forgotPasswordUser,
+  resetPassword
 };

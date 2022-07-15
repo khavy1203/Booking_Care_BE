@@ -108,10 +108,68 @@ const getUserAccount = async (req, res) => {
     });
   }
 };
+
+const updateInforUser = async (req, res) => {
+  try {
+    let data = await userApiServices.updateInforUser(req.body);
+    res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (e) {
+    console.error("check error: ", e);
+    return res.status(500).json({
+      EM: "error from sever", //error message
+      EC: "-1", //error code
+      DT: "",
+    });
+  }
+};
+
+const forgotPasswordUser = async (req, res) => {
+  try {
+    let data = await userApiServices.forgotPasswordUser(req.body);
+    res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (e) {
+    console.error("check error: ", e);
+    return res.status(500).json({
+      EM: "error from sever", //error message
+      EC: "-1", //error code
+      DT: "",
+    });
+  }
+};
+const resetPassword = async (req, res) => {
+  try {
+
+    let data = await userApiServices.resetPassword(req.body);
+    res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (e) {
+    console.error("check error: ", e);
+    return res.status(500).json({
+      EM: "error from sever", //error message
+      EC: "-1", //error code
+      DT: "",
+    });
+  }
+};
+
 module.exports = {
   readFunc,
   createFunc,
   updateFunc,
   deleteFunc,
   getUserAccount,
+  updateInforUser,
+  forgotPasswordUser,
+  resetPassword
 };

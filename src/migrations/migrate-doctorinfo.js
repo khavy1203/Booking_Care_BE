@@ -8,9 +8,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      imageDoctor: {
-        type: Sequelize.STRING,
-      },
       introductionVI: {
         type: Sequelize.STRING,
       },
@@ -18,16 +15,13 @@ module.exports = {
         type: Sequelize.STRING,
       },
       paymentVI: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+        type: Sequelize.STRING,
       },
       descriptionHTLM_VI: {
         type: Sequelize.TEXT,
-        allowNull: false,
       },
       descriptionMarkdown_VI: {
         type: Sequelize.TEXT,
-        allowNull: false,
       },
       degree_VI: {
         type: Sequelize.STRING,
@@ -40,24 +34,19 @@ module.exports = {
         type: Sequelize.STRING,
       },
       paymentEN: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+        type: Sequelize.STRING,
       },
       descriptionHTLM_EN: {
         type: Sequelize.TEXT,
-        allowNull: false,
       },
       descriptionMarkdown_EN: {
         type: Sequelize.TEXT,
-        allowNull: false,
       },
       degree_EN: {
         type: Sequelize.STRING,
       },
-
       price: {
         type: Sequelize.INTEGER,
-        allowNull: false,
       },
       doctorId: {
         type: Sequelize.INTEGER,
@@ -68,15 +57,6 @@ module.exports = {
       },
       linkfile: {
         type: Sequelize.STRING,
-      },
-      provinceId: {
-        type: Sequelize.INTEGER,
-      },
-      districtId: {
-        type: Sequelize.INTEGER,
-      },
-      wardId: {
-        type: Sequelize.INTEGER,
       },
       createdAt: {
         type: Sequelize.DATE,

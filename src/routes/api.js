@@ -31,6 +31,10 @@ const initApiRoutes = (app) => {
   routes.put("/user/update", userController.updateFunc);
   routes.delete("/user/delete", userController.deleteFunc);
   routes.get("/user/account", userController.getUserAccount);
+  routes.put("/user/updateInforUser", userController.updateInforUser);
+  routes.post("/user/forgotPasswordUser", userController.forgotPasswordUser);
+  routes.post("/reset-password", userController.resetPassword);
+
 
   // routes.get("/account", userController.getUserAccount);
 
@@ -99,8 +103,8 @@ const initApiRoutes = (app) => {
   routes.get("/partner/getStatusClinic", partnerController.getStatusClinic);
   routes.get("/partner/getSpecialty", partnerController.getSpecialty);
   routes.get("/partner/getDoctorsOfClinic", partnerController.getDoctorsOfClinic);
-
-
+  routes.post("/partner/deleteDoctorOfClinic", partnerController.deleteDoctorOfClinic);
+  routes.post("/partner/updateDoctorOfClinic", partnerController.updateDoctorOfClinic);
 
   //province
   routes.get("/provinces/read", provinceController.readFunc);
