@@ -42,11 +42,16 @@ const registerClinic = async (Clinic) => {
                     groupId: 5// cho đối tác có quyền đối tác, nhưng vẫn chưa thể vào phòng khám và hoạt động được tại vì active =0 thì không cho phép (pending)
                 });
                 await findUser.save();
+                return {
+                    EM: "Đăng ký thành công. Chúng tôi sẽ liên hệ với bạn.",
+                    EC: 0,
+                    DT: "",
+                };
             }
         }
         return {
-            EM: "Đăng ký thành công. Chúng tôi sẽ liên hệ với bạn.",
-            EC: 0,
+            EM: "Có điều gì bị sai sót ở đây !!.",
+            EC: 1,
             DT: "",
         };
     } catch (e) {

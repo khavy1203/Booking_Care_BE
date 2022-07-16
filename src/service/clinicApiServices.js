@@ -8,8 +8,12 @@ const getClinicWithPagination = async (page, limit) => {
         const { count, rows } = await db.Clinics.findAndCountAll({
             offset: offset,
             limit: limit,
-
+            include: {
+                model: db.Users,
+                attributes: ["id", "email", "image", "groupId"],
+            },
             order: [["id", "DESC"]],
+            raw: true
         });
         //count tổng số bảng ghi, rows là mảng các phần tử
         let totalPages = Math.ceil(count / limit);
@@ -32,7 +36,6 @@ const getClinicWithPagination = async (page, limit) => {
         };
     }
 };
-
 const getAllClinics = async () => {
     try {
         let clinics = await db.Clinics.findAll();
