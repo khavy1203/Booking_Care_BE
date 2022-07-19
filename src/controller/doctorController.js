@@ -71,8 +71,41 @@ const getInfoDoctorModal = async (req, res) => {
   }
 };
 
+const getAllDoctors = async (req, res) => {
+  try {
+    if (req.query.page && req.query.limit) {
+      let page = req.query.page;
+      let limit = req.query.limit;
+      let specialId = req.query.special;
+      console.log("check page, id ,limit >>", page, limit);
+      let data = await doctorAPIService.getAllDoctors(+page, +limit, +specialId);
+      res.status(200).json({
+        EM: data.EM,
+        EC: data.EC,
+        DT: data.DT,
+      });
+    }
+    else {
+      let data = await doctorAPIService.getAllClinics();
+      res.status(200).json({
+        EM: data.EM,
+        EC: data.EC,
+        DT: data.DT,
+      });
+    }
+  } catch (e) {
+    console.error("check readFunc: ", e);
+    return res.status(500).json({
+      EM: "error from sever", //error message
+      EC: "-1", //error code
+      DT: "",
+    });
+  }
+};
+
 module.exports = {
   getTopDoctorHome: getTopDoctorHome,
   getInfoDoctor,
   getInfoDoctorModal,
+  getAllDoctors
 };

@@ -4,6 +4,7 @@ import {
   checkPhone,
   hashUserPassword,
   hashUserEmail,
+  compareUserPassword,
   compareEmail
 } from "./loginRegisterService.js";
 import jwtAction from "../middleware/JWTaction";
@@ -337,6 +338,49 @@ const resetPassword = async (user) => {
     };
   }
 };
+
+const updatePassword = async (dataPassword) => {
+  try {
+    console.log("check dataPassword", dataPassword);
+    let findUser = await db.Users.findOne({ where: { id: dataPassword.id } });
+    if (findUser) {
+      let isCorrectPassword = compareUserPassword(
+        dataPassword.oldpassword,
+        findUser.password
+      );
+      if (isCorrectPassword === true) {
+        findUser.set({
+          password: hashUserPassword(dataPassword.newpassword)
+        })
+        await findUser.save();
+        return {
+          EM: "Cập nhật mật khẩu thành công",
+          EC: 0,
+          DT: "",
+        };
+      } else {
+        return {
+          EM: "Mật khẩu cũ không chính xác",
+          EC: 1,
+          DT: "",
+        };
+      }
+
+    }
+    return {
+      EM: "Not find or something error",
+      EC: "1",
+      DT: "",
+    };
+  } catch (e) {
+    console.log("error from service : >>>", e);
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
 module.exports = {
   getAllUsers,
   createUser,
@@ -346,5 +390,6 @@ module.exports = {
   getUserAccount,
   updateInforUser,
   forgotPasswordUser,
-  resetPassword
+  resetPassword,
+  updatePassword
 };

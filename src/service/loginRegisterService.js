@@ -93,7 +93,7 @@ const loginUser = async (rawUserAccount) => {
       include: [
         {
           model: db.Clinics,
-          attributes: ["id", "nameVI", "addressVI", "provinceId", "districtId", "wardId"],
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
           raw: true,
           nest: true
         },
@@ -117,6 +117,7 @@ const loginUser = async (rawUserAccount) => {
         //test roles
         let groupWithRoles = await getGroupWithRole(user);
         let payload = {
+          id: user.id,
           email: user.email,
           username: user.username,
           groupWithRoles,
@@ -166,6 +167,7 @@ module.exports = {
   checkEmail,
   checkPhone,
   hashUserPassword,
+  compareUserPassword,
   hashUserEmail,
-  compareEmail
+  compareEmail,
 };

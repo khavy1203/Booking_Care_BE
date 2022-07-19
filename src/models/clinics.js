@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       addressEN: DataTypes.STRING,
       descriptionHTML_EN: DataTypes.TEXT,
       descriptionMarkdown_EN: DataTypes.TEXT,
-
+      timework: DataTypes.STRING,
       provinceId: DataTypes.INTEGER,
       districtId: DataTypes.INTEGER,
       wardId: DataTypes.INTEGER,

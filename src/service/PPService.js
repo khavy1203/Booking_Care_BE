@@ -31,6 +31,7 @@ const loginPPGoogle = async (userraw) => {
     console.log("check user>>>", user)
     let groupWithRoles = await getGroupWithRole(user);
     let payload = {
+      id: user.id,
       email: user.email,
       username: user.username,
       groupWithRoles,
@@ -94,6 +95,7 @@ const loginPPGithub = async (userraw) => {
     });
     let groupWithRoles = await getGroupWithRole(user);
     let payload = {
+      id: user.id,
       email: user.email,
       username: user.username,
       groupWithRoles,

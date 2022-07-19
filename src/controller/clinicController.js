@@ -84,10 +84,96 @@ const deleteFunc = async (req, res) => {
 };
 
 
+const fetchDoctorOfCLinic = async (req, res) => {
+    try {
+        if (req.query.page && req.query.limit) {
+            let page = req.query.page;
+            let limit = req.query.limit;
+            let idClinic = req.query.id;
+            console.log("check page, id ,limit >>", page, limit, idClinic);
+            let data = await clinicApiServices.fetchDoctorOfCLinic(+page, +limit, +idClinic);
+            res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT,
+            });
+        }
+        else {
+            let data = await clinicApiServices.getAllClinics();
+            res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT,
+            });
+        }
+    } catch (e) {
+        console.error("check readFunc: ", e);
+        return res.status(500).json({
+            EM: "error from sever", //error message
+            EC: "-1", //error code
+            DT: "",
+        });
+    }
+};
+const getInforClininicOfUserOnPage = async (req, res) => {
+    try {
+        if (req.query.page && req.query.limit) {
+            let page = req.query.page;
+            let limit = req.query.limit;
+            let province = req.query.province;
+            let district = req.query.district;
+            let ward = req.query.ward;
+            let data = await clinicApiServices.getInforClininicOfUserOnPage(+page, +limit, +province, +district, +ward);
+            res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT,
+            });
+        }
+        else {
+            let data = await clinicApiServices.getAllClinics();
+            res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT,
+            });
+        }
+    } catch (e) {
+        console.error("check readFunc: ", e);
+        return res.status(500).json({
+            EM: "error from sever", //error message
+            EC: "-1", //error code
+            DT: "",
+        });
+    }
+};
 
+const getClinic = async (req, res) => {
+    try {
+        let id = req.query.id;
+        console.log("check id >> ", id)
+        let data = await clinicApiServices.getClinic(id);
+        res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT,
+        });
+
+    } catch (e) {
+        console.error("check readFunc: ", e);
+        return res.status(500).json({
+            EM: "error from sever", //error message
+            EC: "-1", //error code
+            DT: "",
+        });
+    }
+};
 module.exports = {
     readFunc,
     createFunc,
     updateFunc,
     deleteFunc,
+    fetchDoctorOfCLinic,
+    getInforClininicOfUserOnPage,
+    getClinic
 };

@@ -10,10 +10,10 @@ const getClinicWithPagination = async (page, limit) => {
             limit: limit,
             include: {
                 model: db.Users,
-                attributes: ["id", "email", "image", "groupId"],
+                attributes: ["id", "email", "image", "groupId", "phone",],
+
             },
             order: [["id", "DESC"]],
-            raw: true
         });
         //count tổng số bảng ghi, rows là mảng các phần tử
         let totalPages = Math.ceil(count / limit);
@@ -147,11 +147,210 @@ const deleteClinic = async (id) => {
 };
 
 
+const fetchDoctorOfCLinic = async (page, limit, id) => {
+    try {
+        let offset = (page - 1) * limit;
+        const clinic = await db.Clinics.findOne({
+            where: { id: id },
+            include: {
+                model: db.Users,
+                attributes: ["id", "email", "image", "groupId", "phone"],
+                where: { groupId: 5 },
+            },
+            raw: true
+        })
+        const { count, rows } = await db.Users.findAndCountAll({
+            offset: offset,
+            limit: limit,
+            where: {
+                clinicId: id,
+            },
+            attributes: {
+                exclude: ["password"],
+            },
+            include: [{
+                model: db.Doctorinfo,
+                attributes: ["id", "active", "price", "degree_VI", "degree_EN"],
+                where: {
+                    active: 1,
+                }
 
+            },
+            {
+                model: db.Specialties,
+                attributes: ["id", "nameVI", "nameEN", "image"],
+
+            },
+            ],
+            order: [["id", "DESC"]],
+            raw: true
+
+        });
+        //count tổng số bảng ghi, rows là mảng các phần tử
+        let totalPages = Math.ceil(count / limit);
+        let data = {
+            totalRows: count,
+            totalPages: totalPages,
+            doctors: rows,
+            clinic: clinic ? clinic : {},
+        };
+        return {
+            EM: "create page successfully",
+            EC: "0",
+            DT: data,
+        };
+    } catch (e) {
+        console.log("error from service : >>>", e);
+        return {
+            EM: "Something wrong ...",
+            EC: "-2",
+            DT: "",
+        };
+    }
+};
+const getInforClininicOfUserOnPage = async (page, limit, provinceId, districtId, wardId) => {
+    try {
+
+        let offset = (page - 1) * limit;
+        let data = [];
+        if (provinceId && !districtId) {
+
+            const { count, rows } = await db.Clinics.findAndCountAll({
+                offset: offset,
+                limit: limit,
+                include: {
+                    model: db.Users,
+                    attributes: ["id", "email", "image", "groupId", "phone",]
+                },
+                where: {
+                    provinceId: provinceId,
+                },
+                order: [["id", "DESC"]],
+                raw: true
+            });
+            let totalPages = Math.ceil(count / limit);
+            data = {
+                totalRows: count,
+                totalPages: totalPages,
+                clinics: rows,
+            };
+        }
+
+        else if (districtId && !wardId) {
+            const { count, rows } = await db.Clinics.findAndCountAll({
+                offset: offset,
+                limit: limit,
+                include: {
+                    model: db.Users,
+                    attributes: ["id", "email", "image", "groupId", "phone",]
+                },
+                where: {
+                    districtId: districtId,
+                },
+                order: [["id", "DESC"]],
+                raw: true
+            });
+            let totalPages = Math.ceil(count / limit);
+            data = {
+                totalRows: count,
+                totalPages: totalPages,
+                clinics: rows,
+            };
+        }
+        else if (wardId) {
+            const { count, rows } = await db.Clinics.findAndCountAll({
+                offset: offset,
+                limit: limit,
+                include: {
+                    model: db.Users,
+                    attributes: ["id", "email", "image", "groupId", "phone",]
+                },
+                where: {
+                    wardId: wardId,
+                },
+                order: [["id", "DESC"]],
+                raw: true
+            });
+            let totalPages = Math.ceil(count / limit);
+            data = {
+                totalRows: count,
+                totalPages: totalPages,
+                clinics: rows,
+            };
+        }
+        else {
+            const { count, rows } = await db.Clinics.findAndCountAll({
+                offset: offset,
+                limit: limit,
+                include: {
+                    model: db.Users,
+                    attributes: ["id", "email", "image", "groupId", "phone",]
+                },
+                order: [["id", "DESC"]],
+                raw: true
+            });
+            let totalPages = Math.ceil(count / limit);
+            data = {
+                totalRows: count,
+                totalPages: totalPages,
+                clinics: rows,
+            };
+        }
+
+        //count tổng số bảng ghi, rows là mảng các phần tử
+
+        return {
+            EM: "create page successfully",
+            EC: "0",
+            DT: data,
+        };
+    } catch (e) {
+        console.log("error from service : >>>", e);
+        return {
+            EM: "Something wrong ...",
+            EC: "-2",
+            DT: "",
+        };
+    }
+};
+
+const getClinic = async (id) => {
+    try {
+        const clinic = await db.Clinics.findOne({
+            where: { id: +id },
+            raw: true
+        });
+
+        if (clinic) {
+
+            return {
+                EM: "Delete successfully",
+                EC: "0",
+                DT: clinic,
+            };
+        } else {
+            return {
+                EM: "No Clinic find",
+                EC: "1",
+                DT: [],
+            };
+        }
+    } catch (e) {
+        console.log("error from service : >>>", e);
+        return {
+            EM: "Something wrong ...",
+            EC: "-2",
+            DT: "",
+        };
+    }
+};
 module.exports = {
     getAllClinics,
     createClinic,
     updateClinic,
     deleteClinic,
     getClinicWithPagination,
+    fetchDoctorOfCLinic,
+    getInforClininicOfUserOnPage,
+    getClinic
 };

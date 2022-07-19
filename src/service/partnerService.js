@@ -23,6 +23,10 @@ const registerClinic = async (Clinic) => {
                 EC: 1,
                 DT: "",
             };
+        } else {
+            findUser.set({
+                phone: Clinic.phoneContact,
+            });
         }
         let createClinic = await db.Clinics.create({
             nameVI: Clinic.name,
@@ -297,6 +301,35 @@ const updateDoctorOfClinic = async (dataDoctors) => {
         }
     });
 }
+
+const addImformationClinic = async (Clinic) => {
+    try {
+        console.log("check clinic >>>", Clinic)
+
+        let findClinic = await db.Clinics.findOne({ where: { id: Clinic.id } });
+        if (findClinic) {
+            findClinic.set(Clinic);
+            await findClinic.save();
+            return {
+                EM: "Update success",
+                EC: "0",
+                DT: "",
+            };
+        }
+        return {
+            EM: "Not find or something error",
+            EC: "1",
+            DT: "",
+        };
+    } catch (e) {
+        console.log("error from service : >>>", e);
+        return {
+            EM: "Something wrong ...",
+            EC: "-2",
+            DT: "",
+        };
+    }
+};
 module.exports = {
     registerClinic,
     registerDoctorClinic,
@@ -304,5 +337,6 @@ module.exports = {
     getSpecialty,
     getDoctorsOfClinic,
     deleteDoctorOfClinic,
-    updateDoctorOfClinic
+    updateDoctorOfClinic,
+    addImformationClinic
 };

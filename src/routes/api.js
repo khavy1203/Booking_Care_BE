@@ -33,7 +33,9 @@ const initApiRoutes = (app) => {
   routes.get("/user/account", userController.getUserAccount);
   routes.put("/user/updateInforUser", userController.updateInforUser);
   routes.post("/user/forgotPasswordUser", userController.forgotPasswordUser);
+  routes.put("/user/updatepassword", userController.updatePassword);
   routes.post("/reset-password", userController.resetPassword);
+
 
 
   // routes.get("/account", userController.getUserAccount);
@@ -44,6 +46,7 @@ const initApiRoutes = (app) => {
   routes.get("/top-doctor-home", doctorController.getTopDoctorHome);
   routes.get("/doctor-detail", doctorController.getInfoDoctor);
   routes.get(`/doctor-modal`, doctorController.getInfoDoctorModal);
+  routes.get(`/doctor/getAllDoctors`, doctorController.getAllDoctors);
 
   //huyên: schedule router
   routes.get("/schedule-detail", scheduleController.getSchedule);
@@ -96,6 +99,12 @@ const initApiRoutes = (app) => {
   routes.post("/clinic/create", clinicController.createFunc);
   routes.put("/clinic/update", clinicController.updateFunc);
   routes.delete("/clinic/delete", clinicController.deleteFunc);
+  routes.get("/clinic/getClinic", clinicController.getClinic);
+
+
+  routes.get("/doctor-page", clinicController.fetchDoctorOfCLinic);
+  routes.get("/clinic-page", clinicController.getInforClininicOfUserOnPage);
+
 
   //partner
   routes.post("/partner/registerClinic", partnerController.registerClinicFunc);
@@ -105,6 +114,9 @@ const initApiRoutes = (app) => {
   routes.get("/partner/getDoctorsOfClinic", partnerController.getDoctorsOfClinic);
   routes.post("/partner/deleteDoctorOfClinic", partnerController.deleteDoctorOfClinic);
   routes.post("/partner/updateDoctorOfClinic", partnerController.updateDoctorOfClinic);
+  routes.post("/partner/addImformationClinic", partnerController.addImformationClinic);
+
+
 
   //province
   routes.get("/provinces/read", provinceController.readFunc);

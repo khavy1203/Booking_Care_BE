@@ -131,6 +131,24 @@ const updateDoctorOfClinic = async (req, res) => {
         });
     }
 };
+
+const addImformationClinic = async (req, res) => {
+    try {
+        let data = await partnerApiServices.addImformationClinic(req.body);
+        res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT,
+        });
+    } catch (e) {
+        console.error("check error: ", e);
+        return res.status(500).json({
+            EM: "error from sever", //error message
+            EC: "-1", //error code
+            DT: "",
+        });
+    }
+};
 module.exports = {
     registerClinicFunc,
     registerDoctorClinic,
@@ -138,5 +156,6 @@ module.exports = {
     getSpecialty,
     getDoctorsOfClinic,
     deleteDoctorOfClinic,
-    updateDoctorOfClinic
+    updateDoctorOfClinic,
+    addImformationClinic
 }

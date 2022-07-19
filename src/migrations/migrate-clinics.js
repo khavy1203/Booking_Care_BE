@@ -68,7 +68,9 @@ module.exports = {
       status: {
         type: Sequelize.INTEGER,
       },//0 đợi duyệt, 1 là hoạt động, 2 là tạm dừng
-
+      timework: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         type: Sequelize.DATE,
       },

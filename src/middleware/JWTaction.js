@@ -14,7 +14,13 @@ const nonSecurePaths = [
   '/reset-password',
   '/user/updateInforUser',
   '/clinic/read',
+  '/doctor-page',
+  "/clinic-page",
+  "/user/updatepassword",
+  "/doctor/getAllDoctors",
+  "/specialty/read",
 
+  "/schedule/create",
   "/top-doctor-home",
   "/timeframe/read",
   "/booking/create",
