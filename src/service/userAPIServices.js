@@ -140,7 +140,15 @@ const createUser = async (data) => {
     }
 
     let user = { ...data, password: hashPassword };
-    await db.Users.create(user);
+
+    let createNewUser = await db.Users.create(user);
+    if (createNewUser) {
+      await db.Doctorinfo.create({
+        doctorId: createNewUser.dataValues.id,
+        active: 2// 1 hoạt động, 2 là tạm dứng
+      })
+    }
+
     return {
       EM: "create user successfully",
       EC: 0,
@@ -160,19 +168,35 @@ const updateUser = async (user) => {
   try {
     let findUser = await db.Users.findOne({ where: { id: user.id } });
     if (findUser) {
+      if (user.groupId === 2)//nếu cập nhật lại bác sĩ thì cần phải thêm doctor infor
+      {
+        let doctorInfo = db.Doctorinfo.findOne({ where: { groupId: findUser.id } })
+        if (!doctorInfo) {//kiếm có doctor in ffo ko không có thi ftiến hành tạo
+          await db.Doctorinfo.create({
+            doctorId: findUser.id,
+            active: 2// 1 hoạt động, 2 là tạm dứng
+          })
+
+        }
+
+      }
       findUser.set(user);
       await findUser.save();
+
       return {
         EM: "Update success",
-        EC: "0",
+        EC: 0,
         DT: "",
       };
     }
+
     return {
       EM: "Not find or something error",
       EC: "1",
       DT: "",
-    };
+
+
+    }
   } catch (e) {
     console.log("error from service : >>>", e);
     return {
@@ -381,6 +405,60 @@ const updatePassword = async (dataPassword) => {
     };
   }
 };
+
+const getUserById = async (id) => {
+  try {
+    if (id) {
+      let user = await db.Users.findOne({
+        where: { id: id },
+        attributes: { exclude: ['password'] },
+        include:
+          [
+            {
+              model: db.Group,
+              attributes: ["name", "description"]
+            },
+            {
+              model: db.Clinics,
+              attributes: { exclude: ['createdAt', 'updateAt'] },
+            },
+            {
+              model: db.Specialties,
+              attributes: { exclude: ['createdAt', 'updateAt'] },
+            },
+          ],
+        raw: true, //kiểu ob js
+        nest: true, //kiểu gộp dữ liệu lại
+      });
+      if (user) {
+        return {
+          EM: "find User",
+          EC: 0,
+          DT: user,
+        };
+      }
+      return {
+        EM: "not find User",
+        EC: 1,
+        DT: [],
+      };
+    } else {
+      return {
+        EM: "dont parametter",
+        EC: 1,
+        DT: [],
+      };
+    }
+
+  } catch (e) {
+    console.log("error from service : >>>", e);
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
 module.exports = {
   getAllUsers,
   createUser,
@@ -391,5 +469,7 @@ module.exports = {
   updateInforUser,
   forgotPasswordUser,
   resetPassword,
-  updatePassword
+  updatePassword,
+  getUserById
+
 };

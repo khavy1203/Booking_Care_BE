@@ -324,7 +324,7 @@ const getClinic = async (id) => {
         if (clinic) {
 
             return {
-                EM: "Delete successfully",
+                EM: "Get successfully",
                 EC: "0",
                 DT: clinic,
             };
@@ -344,6 +344,41 @@ const getClinic = async (id) => {
         };
     }
 };
+
+const fetchAllClinicsOfSupport = async (page, limit) => {
+    try {
+        let offset = (page - 1) * limit;
+        const { count, rows } = await db.Clinics.findAndCountAll({
+            offset: offset,
+            limit: limit,
+            include: {
+                model: db.Users,
+                attributes: ["id", "email", "image", "groupId", "phone",],
+
+            },
+            order: [["id", "DESC"]],
+        });
+        //count tổng số bảng ghi, rows là mảng các phần tử
+        let totalPages = Math.ceil(count / limit);
+        let data = {
+            totalRows: count,
+            totalPages: totalPages,
+            clinics: rows,
+        };
+        return {
+            EM: "create page successfully",
+            EC: "0",
+            DT: data,
+        };
+    } catch (e) {
+        console.log("error from service : >>>", e);
+        return {
+            EM: "Something wrong ...",
+            EC: "-2",
+            DT: "",
+        };
+    }
+};
 module.exports = {
     getAllClinics,
     createClinic,
@@ -352,5 +387,6 @@ module.exports = {
     getClinicWithPagination,
     fetchDoctorOfCLinic,
     getInforClininicOfUserOnPage,
-    getClinic
+    getClinic,
+    fetchAllClinicsOfSupport
 };

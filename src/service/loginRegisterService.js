@@ -93,7 +93,7 @@ const loginUser = async (rawUserAccount) => {
       include: [
         {
           model: db.Clinics,
-          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          attributes: ['id'],
           raw: true,
           nest: true
         },
@@ -120,13 +120,11 @@ const loginUser = async (rawUserAccount) => {
           id: user.id,
           email: user.email,
           username: user.username,
+          image: user.image,
           groupWithRoles,
-          Clinic: user.Clinic,
-          Specialty: user.Specialty,
-          genderId: user.genderId,
-          phone: user.phone,
-          address: user.address,
-          image: user.image
+          groupId: user.groupId,
+          Clinic: user.Clinic.id,
+          Specialty: user.Specialty.id,
         };
         console.log("check payload :>>>", payload);
         let token = createJWT(payload);
@@ -135,14 +133,6 @@ const loginUser = async (rawUserAccount) => {
           EC: "0",
           DT: {
             access_token: token,
-            groupWithRoles: groupWithRoles,
-            email: user.email,
-            username: user.username,
-            genderId: user.genderId,
-            phone: user.phone,
-            address: user.address,
-            image: user.image
-
           },
         };
       }

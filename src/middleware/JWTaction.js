@@ -19,6 +19,8 @@ const nonSecurePaths = [
   "/user/updatepassword",
   "/doctor/getAllDoctors",
   "/specialty/read",
+  "/user/getUserById",
+  "/clinic/getClinic",
 
   "/schedule/create",
   "/top-doctor-home",

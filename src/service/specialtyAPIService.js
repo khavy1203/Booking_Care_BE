@@ -145,10 +145,42 @@ const deleteSpecialty = async (id) => {
     };
   }
 };
+
+const fetchAllSpecialOfSupport = async (page, limit) => {
+  try {
+    let offset = (page - 1) * limit;
+    const { count, rows } = await db.Specialties.findAndCountAll({
+      offset: offset,
+      limit: limit,
+
+      order: [["id", "DESC"]],
+    });
+    //count tổng số bảng ghi, rows là mảng các phần tử
+    let totalPages = Math.ceil(count / limit);
+    let data = {
+      totalRows: count,
+      totalPages: totalPages,
+      specialties: rows,
+    };
+    return {
+      EM: "create page successfully",
+      EC: "0",
+      DT: data,
+    };
+  } catch (e) {
+    console.log("error from service : >>>", e);
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
 module.exports = {
   createSpecialty: createSpecialty,
   getSpecialtyWithPagination,
   getAllSpecialties,
   updateSpecialty,
-  deleteSpecialty
+  deleteSpecialty,
+  fetchAllSpecialOfSupport
 };

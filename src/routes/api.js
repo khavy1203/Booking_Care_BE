@@ -34,6 +34,8 @@ const initApiRoutes = (app) => {
   routes.put("/user/updateInforUser", userController.updateInforUser);
   routes.post("/user/forgotPasswordUser", userController.forgotPasswordUser);
   routes.put("/user/updatepassword", userController.updatePassword);
+  routes.get("/user/getUserById", userController.getUserById);
+
   routes.post("/reset-password", userController.resetPassword);
 
 
@@ -93,6 +95,9 @@ const initApiRoutes = (app) => {
   routes.post("/specialty/create", specialtyController.createSpecialty);
   routes.put("/specialty/update", specialtyController.updateFunc);
   routes.delete("/specialty/delete", specialtyController.deleteFunc)
+  routes.get("/specialty/fetchAllSpecialOfSupport", specialtyController.fetchAllSpecialOfSupport);
+
+
 
   //clinic
   routes.get("/clinic/read", clinicController.readFunc);
@@ -100,6 +105,8 @@ const initApiRoutes = (app) => {
   routes.put("/clinic/update", clinicController.updateFunc);
   routes.delete("/clinic/delete", clinicController.deleteFunc);
   routes.get("/clinic/getClinic", clinicController.getClinic);
+  routes.get("/clinic/fetchAllClinicsOfSupport", clinicController.fetchAllClinicsOfSupport);
+
 
 
   routes.get("/doctor-page", clinicController.fetchDoctorOfCLinic);

@@ -14,13 +14,13 @@ const loginPPGoogle = async (userraw) => {
       include: [
         {
           model: db.Clinics,
-          attributes: ["id", "nameVI", "addressVI", "provinceId", "districtId", "wardId"],
+          attributes: ['id'],
           raw: true,
           nest: true
         },
         {
           model: db.Specialties,
-          attributes: ["id", "nameVI"],
+          attributes: ["id"],
           raw: true,
           nest: true
         },
@@ -34,14 +34,11 @@ const loginPPGoogle = async (userraw) => {
       id: user.id,
       email: user.email,
       username: user.username,
+      image: user.image,
       groupWithRoles,
-      Clinic: user.Clinic,
-      Specialty: user.Specialty,
-      genderId: user.genderId,
-      phone: user.phone,
-      address: user.address,
-      image: user.image
-
+      groupId: user.groupId,
+      Clinic: user.Clinic.id,
+      Specialty: user.Specialty.id,
     };
     console.log("check payload :>>>", payload);
     let token = createJWT(payload);
@@ -50,15 +47,6 @@ const loginPPGoogle = async (userraw) => {
       EC: "0",
       DT: {
         access_token: token,
-        groupWithRoles: groupWithRoles,
-        email: user.email,
-        username: user.username,
-        groupId: user.groupId,
-        genderId: user.genderId,
-        phone: user.phone,
-        address: user.address,
-        image: user.image
-
       },
     };
   } catch (e) {
@@ -79,13 +67,13 @@ const loginPPGithub = async (userraw) => {
       include: [
         {
           model: db.Clinics,
-          attributes: ["id", "nameVI", "addressVI", "provinceId", "districtId", "wardId"],
+          attributes: ["id"],
           raw: true,
           nest: true
         },
         {
           model: db.Specialties,
-          attributes: ["id", "nameVI"],
+          attributes: ["id"],
           raw: true,
           nest: true
         },
@@ -98,14 +86,11 @@ const loginPPGithub = async (userraw) => {
       id: user.id,
       email: user.email,
       username: user.username,
+      image: user.image,
       groupWithRoles,
-      Clinic: user.Clinic,
-      Specialty: user.Specialty,
-      genderId: user.genderId,
-      phone: user.phone,
-      address: user.address,
-      image: user.image
-
+      groupId: user.groupId,
+      Clinic: user.Clinic.id,
+      Specialty: user.Specialty.id,
     };
     console.log("check payload :>>>", payload);
     let token = createJWT(payload);
@@ -114,16 +99,6 @@ const loginPPGithub = async (userraw) => {
       EC: "0",
       DT: {
         access_token: token,
-        groupWithRoles: groupWithRoles,
-        email: user.email,
-        username: user.username,
-        groupId: user.groupId,
-        clinicId: user.clinicId,
-        genderId: user.genderId,
-        phone: user.phone,
-        address: user.address,
-        image: user.image
-
       },
     };
   } catch (e) {

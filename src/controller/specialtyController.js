@@ -77,9 +77,38 @@ const deleteFunc = async (req, res) => {
   }
 };
 
+const fetchAllSpecialOfSupport = async (req, res) => {
+  try {
+    if (req.query.page && req.query.limit) {
+      let page = req.query.page;
+      let limit = req.query.limit;
+      let data = await specialtyAPIService.fetchAllSpecialOfSupport(+page, +limit);
+      res.status(200).json({
+        EM: data.EM,
+        EC: data.EC,
+        DT: data.DT,
+      });
+    } else {
+      let data = await specialtyAPIService.getAllSpecialties();
+      res.status(200).json({
+        EM: data.EM,
+        EC: data.EC,
+        DT: data.DT,
+      });
+    }
+  } catch (e) {
+    console.error("check readFunc: ", e);
+    return res.status(500).json({
+      EM: "error from sever", //error message
+      EC: "-1", //error code
+      DT: "",
+    });
+  }
+};
 module.exports = {
   createSpecialty: createSpecialty,
   readFunc,
   updateFunc,
-  deleteFunc
+  deleteFunc,
+  fetchAllSpecialOfSupport
 };
