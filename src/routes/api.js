@@ -35,6 +35,7 @@ const initApiRoutes = (app) => {
   routes.post("/user/forgotPasswordUser", userController.forgotPasswordUser);
   routes.put("/user/updatepassword", userController.updatePassword);
   routes.get("/user/getUserById", userController.getUserById);
+  routes.get("/user/searchUser", userController.searchUser);
 
   routes.post("/reset-password", userController.resetPassword);
 

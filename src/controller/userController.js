@@ -2,23 +2,18 @@ import userApiServices from "../service/userAPIServices";
 import jwt from "jsonwebtoken";
 const readFunc = async (req, res) => {
   try {
-    if (req.query.page && req.query.limit) {
-      let page = req.query.page;
-      let limit = req.query.limit;
-      let data = await userApiServices.getUserWithPagination(+page, +limit);
-      res.status(200).json({
-        EM: data.EM,
-        EC: data.EC,
-        DT: data.DT,
-      });
-    } else {
-      let data = await userApiServices.getAllUsers();
-      res.status(200).json({
-        EM: data.EM,
-        EC: data.EC,
-        DT: data.DT,
-      });
-    }
+    let page = req.query.page;
+    let limit = req.query.limit;
+    console.log("c >>>", page, limit)
+
+    let data = await userApiServices.getUserWithPagination(+page, +limit);
+
+    res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+
   } catch (e) {
     console.error("check readFunc: ", e);
     return res.status(500).json({
@@ -199,6 +194,30 @@ const getUserById = async (req, res) => {
     });
   }
 };
+const searchUser = async (req, res) => {
+  try {
+    let page = req.query.page;
+    let limit = req.query.limit;
+    let search = req.query.search;
+    console.log("c >>>", page, limit)
+
+    let data = await userApiServices.searchUser(search, +page, +limit);
+
+    res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+
+  } catch (e) {
+    console.error("check readFunc: ", e);
+    return res.status(500).json({
+      EM: "error from sever", //error message
+      EC: "-1", //error code
+      DT: "",
+    });
+  }
+};
 module.exports = {
   readFunc,
   createFunc,
@@ -209,5 +228,6 @@ module.exports = {
   forgotPasswordUser,
   resetPassword,
   updatePassword,
-  getUserById
+  getUserById,
+  searchUser
 };

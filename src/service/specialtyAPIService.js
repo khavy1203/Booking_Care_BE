@@ -1,5 +1,6 @@
 //Huyen
 import db from "../models/index.js"; //connectdb
+var Sequelize = require('sequelize');
 
 const getSpecialtyWithPagination = async (page, limit) => {
   try {
@@ -152,7 +153,7 @@ const fetchAllSpecialOfSupport = async (page, limit) => {
     const { count, rows } = await db.Specialties.findAndCountAll({
       offset: offset,
       limit: limit,
-
+      // include: [[Sequelize.fn("COUNT", Sequelize.col("Users.id")), "countUser"]],
       order: [["id", "DESC"]],
     });
     //count tổng số bảng ghi, rows là mảng các phần tử

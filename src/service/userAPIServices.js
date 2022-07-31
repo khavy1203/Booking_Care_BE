@@ -1,4 +1,5 @@
 import db from "../models/index.js"; //connectdb
+const { Op } = require("sequelize");
 import {
   checkEmail,
   checkPhone,
@@ -21,40 +22,79 @@ const makeid = (length) => {
 }
 const getUserWithPagination = async (page, limit) => {
   try {
-    let offset = (page - 1) * limit;
-    const { count, rows } = await db.Users.findAndCountAll({
-      offset: offset,
-      limit: limit,
-      attributes: { exclude: ['password'] },
-      include:
-        [
-          {
-            model: db.Group,
-            attributes: ["name", "description"]
-          },
-          {
-            model: db.Clinics,
-            attributes: ["id", "nameVI",]
-          },
-          {
-            model: db.Specialties,
-            attributes: ["id", "nameVI"]
-          },
-        ],
-      order: [["id", "DESC"]],
-    });
-    //count tổng số bảng ghi, rows là mảng các phần tử
-    let totalPages = Math.ceil(count / limit);
-    let data = {
-      totalRows: count,
-      totalPages: totalPages,
-      users: rows,
-    };
-    return {
-      EM: "create page successfully",
-      EC: "0",
-      DT: data,
-    };
+    console.log("check page and limit >>>", page, limit);
+    if (page && limit) {
+      let offset = (page - 1) * limit;
+      const { count, rows } = await db.Users.findAndCountAll({
+        offset: offset,
+        limit: limit,
+        attributes: { exclude: ['password'] },
+        include:
+          [
+            {
+              model: db.Group,
+              attributes: ["name", "description"]
+            },
+            {
+              model: db.Clinics,
+              attributes: ["id", "nameVI",]
+            },
+            {
+              model: db.Specialties,
+              attributes: ["id", "nameVI"]
+            },
+          ],
+        order: [["id", "DESC"]],
+      });
+      //count tổng số bảng ghi, rows là mảng các phần tử
+      let totalPages = Math.ceil(count / limit);
+      let data = {
+        totalRows: count,
+        totalPages: totalPages,
+        users: rows,
+      };
+      return {
+        EM: "create page successfully",
+        EC: "0",
+        DT: data,
+      };
+    }
+    else {
+      let users = await db.Users.findAll({
+        attributes: { exclude: ['password'] },
+        include:
+          [
+            {
+              model: db.Group,
+              attributes: ["name", "description"]
+            },
+            {
+              model: db.Clinics,
+              attributes: ["id", "nameVI",]
+            },
+            {
+              model: db.Specialties,
+              attributes: ["id", "nameVI"]
+            },
+          ],
+        raw: true, //kiểu ob js
+        nest: true, //kiểu gộp dữ liệu lại    
+      });
+
+      if (users) {
+        return {
+          EM: "get data successfully",
+          EC: "0",
+          DT: users,
+        };
+      }
+      return {
+        EM: "get data fail",
+        EC: "-1",
+        DT: [],
+      };
+    }
+
   } catch (e) {
     console.log("error from service : >>>", e);
     return {
@@ -85,7 +125,7 @@ const getAllUsers = async () => {
           },
         ],
       raw: true, //kiểu ob js
-      nest: true, //kiểu gộp dữ liệu lại
+      nest: true, //kiểu gộp dữ liệu lại    
     });
 
     if (users) {
@@ -103,7 +143,7 @@ const getAllUsers = async () => {
   } catch (e) {
     console.log("error from service : >>>", e);
     return {
-      EM: "Something wrong ...",
+      EM: "Something wrong ...111",
       EC: "-2",
       DT: "",
     };
@@ -459,6 +499,112 @@ const getUserById = async (id) => {
     };
   }
 };
+
+const searchUser = async (search, page, limit) => {
+  try {
+    console.log("check page and limit >>>", page, limit, search);
+    if (page && limit && search != "") {
+      let offset = (page - 1) * limit;
+      const { count, rows } = await db.Users.findAndCountAll({
+        offset: offset,
+        limit: limit,
+        attributes: { exclude: ['password'] },
+        include:
+          [
+            {
+              model: db.Group,
+              attributes: ["name", "description"]
+            },
+            {
+              model: db.Clinics,
+              attributes: ["id", "nameVI",]
+            },
+            {
+              model: db.Specialties,
+              attributes: ["id", "nameVI"]
+            },
+          ],
+        order: [["id", "DESC"]],
+
+        where: {
+
+          [Op.or]: [
+            {
+              email: {
+                // [Op.like]: `%${search}`
+                [Op.like]: `%${search}%`
+
+              }
+            },
+            {
+              username: {
+                // [Op.like]: `%${search}` 
+                [Op.like]: `%${search}%`  
+              }
+            }
+          ]
+        },
+
+      });
+      //count tổng số bảng ghi, rows là mảng các phần tử
+      let totalPages = Math.ceil(count / limit);
+      let data = {
+        totalRows: count,
+        totalPages: totalPages,
+        users: rows,
+      };
+      return {
+        EM: "create page successfully",
+        EC: "0",
+        DT: data,
+      };
+    }
+    // else {
+    //   let users = await db.Users.findAll({
+    //     attributes: { exclude: ['password'] },
+    //     include:
+    //       [
+    //         {
+    //           model: db.Group,
+    //           attributes: ["name", "description"]
+    //         },
+    //         {
+    //           model: db.Clinics,
+    //           attributes: ["id", "nameVI",]
+    //         },
+    //         {
+    //           model: db.Specialties,
+    //           attributes: ["id", "nameVI"]
+    //         },
+    //       ],
+    //     raw: true, //kiểu ob js
+    //     nest: true, //kiểu gộp dữ liệu lại    
+    //   });
+
+    //   if (users) {
+    //     return {
+    //       EM: "get data successfully",
+    //       EC: "0",
+    //       DT: users,
+    //     };
+    //   }
+    //   return {
+    //     EM: "get data fail",
+    //     EC: "-1",
+    //     DT: [],
+    //   };
+    // }
+
+  } catch (e) {
+    console.log("error from service : >>>", e);
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -470,6 +616,7 @@ module.exports = {
   forgotPasswordUser,
   resetPassword,
   updatePassword,
-  getUserById
+  getUserById,
+  searchUser
 
 };

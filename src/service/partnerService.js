@@ -98,7 +98,10 @@ const registerDoctorClinic = async (dataDoctors) => {
                         }
                         await db.Doctorinfo.create({
                             doctorId: createNewUser.dataValues.id,
-                            active: 2// 1 hoạt động, 2 là tạm dứng
+                            active: 2,// 1 hoạt động, 2 là tạm dứng,
+                            price: 300000,
+                            degree_VI: "Thạc sĩ",
+                            degree_EN: "Thạc sĩ"
                         })
                         await sendEmailPassword(objEmail);
 
@@ -276,7 +279,8 @@ const updateDoctorOfClinic = async (dataDoctors) => {
 
             if (findUser) {
                 findUser.set({
-                    specialtyId: dataDoctors.specialIdUser
+                    specialtyId: dataDoctors.specialIdUser,
+                    username: dataDoctors.username
                 });
                 await findUser.save();
             }

@@ -212,7 +212,26 @@ const getInforClininicOfUserOnPage = async (page, limit, provinceId, districtId,
     try {
 
         let offset = (page - 1) * limit;
+
         let data = [];
+        if (!provinceId && !districtId && !wardId) {
+            const { count, rows } = await db.Clinics.findAndCountAll({
+                offset: offset,
+                limit: limit,
+                include: {
+                    model: db.Users,
+                    attributes: ["id", "email", "image", "groupId", "phone",]
+                },
+                order: [["id", "DESC"]],
+                raw: true
+            });
+
+            data = {
+                totalRows: count,
+                totalPages: Math.ceil(count / limit),
+                clinics: rows,
+            };
+        }
         if (provinceId && !districtId) {
 
             const { count, rows } = await db.Clinics.findAndCountAll({
@@ -228,10 +247,10 @@ const getInforClininicOfUserOnPage = async (page, limit, provinceId, districtId,
                 order: [["id", "DESC"]],
                 raw: true
             });
-            let totalPages = Math.ceil(count / limit);
+
             data = {
                 totalRows: count,
-                totalPages: totalPages,
+                totalPages: Math.ceil(count / limit),
                 clinics: rows,
             };
         }
@@ -250,10 +269,10 @@ const getInforClininicOfUserOnPage = async (page, limit, provinceId, districtId,
                 order: [["id", "DESC"]],
                 raw: true
             });
-            let totalPages = Math.ceil(count / limit);
+
             data = {
                 totalRows: count,
-                totalPages: totalPages,
+                totalPages: Math.ceil(count / limit),
                 clinics: rows,
             };
         }
@@ -271,31 +290,14 @@ const getInforClininicOfUserOnPage = async (page, limit, provinceId, districtId,
                 order: [["id", "DESC"]],
                 raw: true
             });
-            let totalPages = Math.ceil(count / limit);
+
             data = {
                 totalRows: count,
-                totalPages: totalPages,
+                totalPages: Math.ceil(count / limit),
                 clinics: rows,
             };
         }
-        else {
-            const { count, rows } = await db.Clinics.findAndCountAll({
-                offset: offset,
-                limit: limit,
-                include: {
-                    model: db.Users,
-                    attributes: ["id", "email", "image", "groupId", "phone",]
-                },
-                order: [["id", "DESC"]],
-                raw: true
-            });
-            let totalPages = Math.ceil(count / limit);
-            data = {
-                totalRows: count,
-                totalPages: totalPages,
-                clinics: rows,
-            };
-        }
+
 
         //count tổng số bảng ghi, rows là mảng các phần tử
 

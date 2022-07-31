@@ -2,7 +2,6 @@ require("dotenv").config();
 import db from "../models/index.js"; //connectdb
 import bcryptjs from "bcryptjs";
 import { Op } from "sequelize";
-import { getGroupWithRole } from "./JWTService";
 import { createJWT, verifyToken } from "../middleware/JWTaction";
 
 const salt = bcryptjs.genSaltSync(10);
@@ -115,13 +114,11 @@ const loginUser = async (rawUserAccount) => {
       );
       if (isCorrectPassword === true) {
         //test roles
-        let groupWithRoles = await getGroupWithRole(user);
         let payload = {
           id: user.id,
           email: user.email,
           username: user.username,
           image: user.image,
-          groupWithRoles,
           groupId: user.groupId,
           Clinic: user.Clinic.id,
           Specialty: user.Specialty.id,
