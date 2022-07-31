@@ -1,5 +1,6 @@
 require("dotenv").config();
 import jwt from "jsonwebtoken";
+import { getGroupWithRole } from "../service/JWTService";
 
 const nonSecurePaths = [
   "/logout",
@@ -21,6 +22,7 @@ const nonSecurePaths = [
   "/specialty/read",
   "/user/getUserById",
   "/clinic/getClinic",
+  "/partner/getStatusClinic",
 
   //"/schedule/read",
   "/schedule/get-current-schedule",
@@ -131,13 +133,15 @@ const checkUserJwt = (req, res, next) => {
 // const getClinicActive = (user)=>{
 //   if()
 // }
-const checkUserPermission = (req, res, next) => {
+const checkUserPermission = async (req, res, next) => {
   // xác thực quyền truy cập trước khi gửi đi
   if (checkNoneSecureDetailPaths(req.path)) return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì
   if (req.user) {
-    let email = req.user.email; //lấy email
-    if (email === "admin@gmail.com") return next();
-    let roles = req.user.groupWithRoles.Roles; //lấy quyền của các roles
+    // let email = req.user.email; //lấy email
+    // if (email === "admin@gmail.com") return next();
+    let groupWithRoles = await getGroupWithRole(req.user);
+    let roles = groupWithRoles.Roles; //lấy quyền của các roles
+
     let currentUrl = req.path; //lấy link truy cập
     if (!roles || roles.length == 0) {
       return res.status(403).json({

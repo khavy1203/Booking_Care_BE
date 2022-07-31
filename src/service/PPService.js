@@ -1,7 +1,4 @@
 import db from "../models/index.js"; //connectdb
-
-import { getGroupWithRole } from "./JWTService";
-
 import { createJWT, verifyToken } from "../middleware/JWTaction";
 
 //chưa sử dụng
@@ -14,28 +11,26 @@ const loginPPGoogle = async (userraw) => {
       include: [
         {
           model: db.Clinics,
-          attributes: ['id'],
+          attributes: ["id"],
           raw: true,
-          nest: true
+          nest: true,
         },
         {
           model: db.Specialties,
           attributes: ["id"],
           raw: true,
-          nest: true
+          nest: true,
         },
       ],
       raw: true,
-      nest: true
+      nest: true,
     });
-    console.log("check user>>>", user)
-    let groupWithRoles = await getGroupWithRole(user);
+    console.log("check user>>>", user);
     let payload = {
       id: user.id,
       email: user.email,
       username: user.username,
       image: user.image,
-      groupWithRoles,
       groupId: user.groupId,
       Clinic: user.Clinic.id,
       Specialty: user.Specialty.id,
@@ -69,25 +64,23 @@ const loginPPGithub = async (userraw) => {
           model: db.Clinics,
           attributes: ["id"],
           raw: true,
-          nest: true
+          nest: true,
         },
         {
           model: db.Specialties,
           attributes: ["id"],
           raw: true,
-          nest: true
+          nest: true,
         },
       ],
       raw: true,
-      nest: true
+      nest: true,
     });
-    let groupWithRoles = await getGroupWithRole(user);
     let payload = {
       id: user.id,
       email: user.email,
       username: user.username,
       image: user.image,
-      groupWithRoles,
       groupId: user.groupId,
       Clinic: user.Clinic.id,
       Specialty: user.Specialty.id,

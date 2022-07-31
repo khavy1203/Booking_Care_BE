@@ -1,5 +1,6 @@
 //Huyen
 import db from "../models/index.js"; //connectdb
+var Sequelize = require("sequelize");
 
 const getSpecialtyWithPagination = async (page, limit) => {
   try {
@@ -61,10 +62,7 @@ const getAllSpecialties = async () => {
 let createSpecialty = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (
-        !data.nameVI ||
-        !data.nameEN
-      ) {
+      if (!data.nameVI || !data.nameEN) {
         resolve({
           EM: "Missing parameter",
           EC: 1,
@@ -92,9 +90,11 @@ let createSpecialty = (data) => {
 };
 const updateSpecialty = async (Specialty) => {
   try {
-    console.log("check specialty >>>", Specialty)
+    console.log("check specialty >>>", Specialty);
 
-    let findSpecialty = await db.Specialties.findOne({ where: { id: Specialty.id } });
+    let findSpecialty = await db.Specialties.findOne({
+      where: { id: Specialty.id },
+    });
     if (findSpecialty) {
       findSpecialty.set(Specialty);
       await findSpecialty.save();
@@ -152,7 +152,7 @@ const fetchAllSpecialOfSupport = async (page, limit) => {
     const { count, rows } = await db.Specialties.findAndCountAll({
       offset: offset,
       limit: limit,
-
+      // include: [[Sequelize.fn("COUNT", Sequelize.col("Users.id")), "countUser"]],
       order: [["id", "DESC"]],
     });
     //count tổng số bảng ghi, rows là mảng các phần tử
@@ -182,5 +182,5 @@ module.exports = {
   getAllSpecialties,
   updateSpecialty,
   deleteSpecialty,
-  fetchAllSpecialOfSupport
+  fetchAllSpecialOfSupport,
 };

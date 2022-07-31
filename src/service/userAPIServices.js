@@ -1,60 +1,97 @@
 import db from "../models/index.js"; //connectdb
+const { Op } = require("sequelize");
 import {
   checkEmail,
   checkPhone,
   hashUserPassword,
   hashUserEmail,
   compareUserPassword,
-  compareEmail
+  compareEmail,
 } from "./loginRegisterService.js";
 import jwtAction from "../middleware/JWTaction";
 import { sendEmailPassword, sendEmailResetPassword } from "./emailService";
 
 const makeid = (length) => {
   var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   for (var i = 0; i < length; i++)
     text += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return text;
-}
+};
 const getUserWithPagination = async (page, limit) => {
   try {
-    let offset = (page - 1) * limit;
-    const { count, rows } = await db.Users.findAndCountAll({
-      offset: offset,
-      limit: limit,
-      attributes: { exclude: ['password'] },
-      include:
-        [
+    console.log("check page and limit >>>", page, limit);
+    if (page && limit) {
+      let offset = (page - 1) * limit;
+      const { count, rows } = await db.Users.findAndCountAll({
+        offset: offset,
+        limit: limit,
+        attributes: { exclude: ["password"] },
+        include: [
           {
             model: db.Group,
-            attributes: ["name", "description"]
+            attributes: ["name", "description"],
           },
           {
             model: db.Clinics,
-            attributes: ["id", "nameVI",]
+            attributes: ["id", "nameVI"],
           },
           {
             model: db.Specialties,
-            attributes: ["id", "nameVI"]
+            attributes: ["id", "nameVI"],
           },
         ],
-      order: [["id", "DESC"]],
-    });
-    //count tổng số bảng ghi, rows là mảng các phần tử
-    let totalPages = Math.ceil(count / limit);
-    let data = {
-      totalRows: count,
-      totalPages: totalPages,
-      users: rows,
-    };
-    return {
-      EM: "create page successfully",
-      EC: "0",
-      DT: data,
-    };
+        order: [["id", "DESC"]],
+      });
+      //count tổng số bảng ghi, rows là mảng các phần tử
+      let totalPages = Math.ceil(count / limit);
+      let data = {
+        totalRows: count,
+        totalPages: totalPages,
+        users: rows,
+      };
+      return {
+        EM: "create page successfully",
+        EC: "0",
+        DT: data,
+      };
+    } else {
+      let users = await db.Users.findAll({
+        attributes: { exclude: ["password"] },
+        include: [
+          {
+            model: db.Group,
+            attributes: ["name", "description"],
+          },
+          {
+            model: db.Clinics,
+            attributes: ["id", "nameVI"],
+          },
+          {
+            model: db.Specialties,
+            attributes: ["id", "nameVI"],
+          },
+        ],
+        raw: true, //kiểu ob js
+        nest: true, //kiểu gộp dữ liệu lại
+      });
+
+      if (users) {
+        return {
+          EM: "get data successfully",
+          EC: "0",
+          DT: users,
+        };
+      }
+      return {
+        EM: "get data fail",
+        EC: "-1",
+        DT: [],
+      };
+    }
   } catch (e) {
     console.log("error from service : >>>", e);
     return {
@@ -68,22 +105,21 @@ const getUserWithPagination = async (page, limit) => {
 const getAllUsers = async () => {
   try {
     let users = await db.Users.findAll({
-      attributes: { exclude: ['password'] },
-      include:
-        [
-          {
-            model: db.Group,
-            attributes: ["name", "description"]
-          },
-          {
-            model: db.Clinics,
-            attributes: ["id", "nameVI",]
-          },
-          {
-            model: db.Specialties,
-            attributes: ["id", "nameVI"]
-          },
-        ],
+      attributes: { exclude: ["password"] },
+      include: [
+        {
+          model: db.Group,
+          attributes: ["name", "description"],
+        },
+        {
+          model: db.Clinics,
+          attributes: ["id", "nameVI"],
+        },
+        {
+          model: db.Specialties,
+          attributes: ["id", "nameVI"],
+        },
+      ],
       raw: true, //kiểu ob js
       nest: true, //kiểu gộp dữ liệu lại
     });
@@ -103,7 +139,7 @@ const getAllUsers = async () => {
   } catch (e) {
     console.log("error from service : >>>", e);
     return {
-      EM: "Something wrong ...",
+      EM: "Something wrong ...111",
       EC: "-2",
       DT: "",
     };
@@ -131,11 +167,10 @@ const createUser = async (data) => {
       hashPassword = hashUserPassword(password);
       let objEmail = {
         email: data.email,
-        password: password
-      }
+        password: password,
+      };
       await sendEmailPassword(objEmail);
-    }
-    else {
+    } else {
       hashPassword = hashUserPassword(data.password);
     }
 
@@ -145,8 +180,8 @@ const createUser = async (data) => {
     if (createNewUser) {
       await db.Doctorinfo.create({
         doctorId: createNewUser.dataValues.id,
-        active: 2// 1 hoạt động, 2 là tạm dứng
-      })
+        active: 2, // 1 hoạt động, 2 là tạm dứng
+      });
     }
 
     return {
@@ -168,17 +203,18 @@ const updateUser = async (user) => {
   try {
     let findUser = await db.Users.findOne({ where: { id: user.id } });
     if (findUser) {
-      if (user.groupId === 2)//nếu cập nhật lại bác sĩ thì cần phải thêm doctor infor
-      {
-        let doctorInfo = db.Doctorinfo.findOne({ where: { groupId: findUser.id } })
-        if (!doctorInfo) {//kiếm có doctor in ffo ko không có thi ftiến hành tạo
+      if (user.groupId === 2) {
+        //nếu cập nhật lại bác sĩ thì cần phải thêm doctor infor
+        let doctorInfo = db.Doctorinfo.findOne({
+          where: { groupId: findUser.id },
+        });
+        if (!doctorInfo) {
+          //kiếm có doctor in ffo ko không có thi ftiến hành tạo
           await db.Doctorinfo.create({
             doctorId: findUser.id,
-            active: 2// 1 hoạt động, 2 là tạm dứng
-          })
-
+            active: 2, // 1 hoạt động, 2 là tạm dứng
+          });
         }
-
       }
       findUser.set(user);
       await findUser.save();
@@ -194,9 +230,7 @@ const updateUser = async (user) => {
       EM: "Not find or something error",
       EC: "1",
       DT: "",
-
-
-    }
+    };
   } catch (e) {
     console.log("error from service : >>>", e);
     return {
@@ -245,7 +279,7 @@ const getUserAccount = async (jwtCookies) => {
         EC: 0,
         DT: {
           token: jwtCookies,
-          decode: decode
+          decode: decode,
         },
       };
     } else {
@@ -296,7 +330,7 @@ const forgotPasswordUser = async (user) => {
     console.log("check user", user);
     let findUser = await db.Users.findOne({
       where: { email: user.email },
-      raw: true
+      raw: true,
     });
     if (findUser) {
       console.log("check findUser", findUser.id);
@@ -304,10 +338,9 @@ const forgotPasswordUser = async (user) => {
       let link = `${process.env.REACT_URL}/reset-password?id=${findUser.id}&email=${hashEmail}`;
       let objEmail = {
         email: user.email,
-        link
-      }
+        link,
+      };
       await sendEmailResetPassword(objEmail);
-
     }
 
     return {
@@ -327,18 +360,16 @@ const forgotPasswordUser = async (user) => {
 
 const resetPassword = async (user) => {
   try {
-
     let findUser = await db.Users.findOne({
-      where: { id: user.id }
+      where: { id: user.id },
     });
     let isCorrectEmail = compareEmail(
       findUser.dataValues.email,
       user.hashEmail
     );
     if (isCorrectEmail) {
-
       findUser.set({
-        password: hashUserPassword(user.dataNewPassword)
+        password: hashUserPassword(user.dataNewPassword),
       });
       await findUser.save();
       return {
@@ -346,7 +377,6 @@ const resetPassword = async (user) => {
         EC: 0,
         DT: "",
       };
-
     }
     return {
       EM: "Cập nhật mật khẩu mới thất bại",
@@ -374,8 +404,8 @@ const updatePassword = async (dataPassword) => {
       );
       if (isCorrectPassword === true) {
         findUser.set({
-          password: hashUserPassword(dataPassword.newpassword)
-        })
+          password: hashUserPassword(dataPassword.newpassword),
+        });
         await findUser.save();
         return {
           EM: "Cập nhật mật khẩu thành công",
@@ -389,7 +419,6 @@ const updatePassword = async (dataPassword) => {
           DT: "",
         };
       }
-
     }
     return {
       EM: "Not find or something error",
@@ -411,22 +440,21 @@ const getUserById = async (id) => {
     if (id) {
       let user = await db.Users.findOne({
         where: { id: id },
-        attributes: { exclude: ['password'] },
-        include:
-          [
-            {
-              model: db.Group,
-              attributes: ["name", "description"]
-            },
-            {
-              model: db.Clinics,
-              attributes: { exclude: ['createdAt', 'updateAt'] },
-            },
-            {
-              model: db.Specialties,
-              attributes: { exclude: ['createdAt', 'updateAt'] },
-            },
-          ],
+        attributes: { exclude: ["password"] },
+        include: [
+          {
+            model: db.Group,
+            attributes: ["name", "description"],
+          },
+          {
+            model: db.Clinics,
+            attributes: { exclude: ["createdAt", "updateAt"] },
+          },
+          {
+            model: db.Specialties,
+            attributes: { exclude: ["createdAt", "updateAt"] },
+          },
+        ],
         raw: true, //kiểu ob js
         nest: true, //kiểu gộp dữ liệu lại
       });
@@ -449,7 +477,6 @@ const getUserById = async (id) => {
         DT: [],
       };
     }
-
   } catch (e) {
     console.log("error from service : >>>", e);
     return {
@@ -459,6 +486,107 @@ const getUserById = async (id) => {
     };
   }
 };
+
+const searchUser = async (search, page, limit) => {
+  try {
+    console.log("check page and limit >>>", page, limit, search);
+    if (page && limit && search != "") {
+      let offset = (page - 1) * limit;
+      const { count, rows } = await db.Users.findAndCountAll({
+        offset: offset,
+        limit: limit,
+        attributes: { exclude: ["password"] },
+        include: [
+          {
+            model: db.Group,
+            attributes: ["name", "description"],
+          },
+          {
+            model: db.Clinics,
+            attributes: ["id", "nameVI"],
+          },
+          {
+            model: db.Specialties,
+            attributes: ["id", "nameVI"],
+          },
+        ],
+        order: [["id", "DESC"]],
+
+        where: {
+          [Op.or]: [
+            {
+              email: {
+                // [Op.like]: `%${search}`
+                [Op.like]: `%${search}%`,
+              },
+            },
+            {
+              username: {
+                // [Op.like]: `%${search}`
+                [Op.like]: `%${search}%`,
+              },
+            },
+          ],
+        },
+      });
+      //count tổng số bảng ghi, rows là mảng các phần tử
+      let totalPages = Math.ceil(count / limit);
+      let data = {
+        totalRows: count,
+        totalPages: totalPages,
+        users: rows,
+      };
+      return {
+        EM: "create page successfully",
+        EC: "0",
+        DT: data,
+      };
+    }
+    // else {
+    //   let users = await db.Users.findAll({
+    //     attributes: { exclude: ['password'] },
+    //     include:
+    //       [
+    //         {
+    //           model: db.Group,
+    //           attributes: ["name", "description"]
+    //         },
+    //         {
+    //           model: db.Clinics,
+    //           attributes: ["id", "nameVI",]
+    //         },
+    //         {
+    //           model: db.Specialties,
+    //           attributes: ["id", "nameVI"]
+    //         },
+    //       ],
+    //     raw: true, //kiểu ob js
+    //     nest: true, //kiểu gộp dữ liệu lại
+    //   });
+
+    //   if (users) {
+    //     return {
+    //       EM: "get data successfully",
+    //       EC: "0",
+    //       DT: users,
+    //     };
+    //   }
+    //   return {
+    //     EM: "get data fail",
+    //     EC: "-1",
+    //     DT: [],
+    //   };
+    // }
+  } catch (e) {
+    console.log("error from service : >>>", e);
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -470,6 +598,6 @@ module.exports = {
   forgotPasswordUser,
   resetPassword,
   updatePassword,
-  getUserById
-
+  getUserById,
+  searchUser,
 };
