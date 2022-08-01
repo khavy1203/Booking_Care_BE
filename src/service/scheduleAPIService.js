@@ -41,8 +41,8 @@ const createSchedule = async (data) => {
       where: { email: data.email },
     });
 
-    //kiểm tra user gửi request có đúng là bác sĩ không
-    if (user && user.groupId === data.groupWithRoles.id) {
+    //kiểm tra user
+    if (user) {
       //lấy ra kế hoạch cần tìm trong 1 ngày chỉ đỉnh
       let foundSchedule = await db.Schedules.findOne({
         where: {
@@ -184,7 +184,7 @@ const createSchedule = async (data) => {
       }
     } else {
       return {
-        EM: "User is not doctor...",
+        EM: "Not found user...",
         EC: "1",
         DT: [],
       };

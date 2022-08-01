@@ -23,9 +23,9 @@ const nonSecurePaths = [
   "/user/getUserById",
   "/clinic/getClinic",
   "/partner/getStatusClinic",
+  "/schedule/get-current-schedule",
 
   //"/schedule/read",
-  "/schedule/get-current-schedule",
   //"/schedule/schedule-delete",
   //"/schedule/time-delete",
   // "/booking/doctor-read",
@@ -33,6 +33,8 @@ const nonSecurePaths = [
   //"/schedule/create",
 
   "/top-doctor-home",
+  "/top-specialty-home",
+  "/top-clinic-home",
   "/timeframe/read",
   //"/booking/create",
   `/doctor-detail`,

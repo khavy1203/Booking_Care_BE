@@ -2,6 +2,30 @@
 import db from "../models/index.js"; //connectdb
 var Sequelize = require("sequelize");
 
+//Huyên: Lấy tên với ảnh chuyên khoa hiển thị thôi
+const getTopSpecialty = async (limit) => {
+  try {
+    const specialties = await db.Specialties.findAll({
+      limit: limit,
+      attributes: ["id", "image", "nameVI", "nameEN"],
+      order: [["id", "DESC"]],
+    });
+
+    return {
+      EM: "get top specialties succeed!!!",
+      EC: "0",
+      DT: specialties,
+    };
+  } catch (e) {
+    console.log("error from service : >>>", e);
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
+
 const getSpecialtyWithPagination = async (page, limit) => {
   try {
     let offset = (page - 1) * limit;
@@ -183,4 +207,5 @@ module.exports = {
   updateSpecialty,
   deleteSpecialty,
   fetchAllSpecialOfSupport,
+  getTopSpecialty,
 };

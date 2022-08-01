@@ -111,7 +111,9 @@ const initApiRoutes = (app) => {
     loginRegisterController.handleLoginPPGithubSuccess
   ); //callback dữ liệu
 
-  //huyên: specialty router
+  //huyên: dùng cho trang chủ
+  routes.get("/top-specialty-home", specialtyController.getTopSpecialtyHome);
+
   routes.get("/specialty/read", specialtyController.readFunc);
   routes.post("/specialty/create", specialtyController.createSpecialty);
   routes.put("/specialty/update", specialtyController.updateFunc);
@@ -122,6 +124,8 @@ const initApiRoutes = (app) => {
   );
 
   //clinic
+  routes.get("/top-clinic-home", clinicController.getTopClinicHome);
+
   routes.get("/clinic/read", clinicController.readFunc);
   routes.post("/clinic/create", clinicController.createFunc);
   routes.put("/clinic/update", clinicController.updateFunc);

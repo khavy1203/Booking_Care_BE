@@ -1,6 +1,30 @@
 import db from "../models/index.js"; //connectdb
 import loginRegisterService from "./loginRegisterService.js";
 
+//Huyên: Lấy tên với ảnh phòng khám hiển thị thôi
+const getTopClinic = async (limit) => {
+  try {
+    const clinics = await db.Clinics.findAll({
+      limit: limit,
+      attributes: ["id", "image", "nameVI", "nameEN"],
+      order: [["id", "DESC"]],
+    });
+
+    return {
+      EM: "get top clinics succeed!!!",
+      EC: "0",
+      DT: clinics,
+    };
+  } catch (e) {
+    console.log("error from service : >>>", e);
+    return {
+      EM: "Something wrong ...",
+      EC: "-2",
+      DT: "",
+    };
+  }
+};
+
 const getClinicWithPagination = async (page, limit) => {
   try {
     let offset = (page - 1) * limit;
@@ -384,4 +408,5 @@ module.exports = {
   getInforClininicOfUserOnPage,
   getClinic,
   fetchAllClinicsOfSupport,
+  getTopClinic,
 };
