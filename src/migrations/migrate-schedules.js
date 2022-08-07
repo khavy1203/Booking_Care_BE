@@ -11,11 +11,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      //Huyên đã đổi date sang string
       date: {
-        type: Sequelize.STRING,
-        // type: Sequelize.DATE,
+        type: Sequelize.DATE,
       },
+      // timestamp: {
+      //   type: Sequelize.STRING,
+      // },
       doctorId: {
         type: Sequelize.INTEGER,
         allowNull: false,

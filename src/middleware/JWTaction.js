@@ -2,7 +2,6 @@ require("dotenv").config();
 import jwt from "jsonwebtoken";
 import { getGroupWithRole } from "../service/JWTService";
 
-
 const nonSecurePaths = [
   "/logout",
   "/login",
@@ -12,11 +11,11 @@ const nonSecurePaths = [
   "/github",
   "/auth/github/callback",
   "/user/account",
-  '/user/forgotPasswordUser',
-  '/reset-password',
-  '/user/updateInforUser',
-  '/clinic/read',
-  '/doctor-page',
+  "/user/forgotPasswordUser",
+  "/reset-password",
+  "/user/updateInforUser",
+  "/clinic/read",
+  "/doctor-page",
   "/clinic-page",
   "/user/updatepassword",
   "/doctor/getAllDoctors",
@@ -24,17 +23,24 @@ const nonSecurePaths = [
   "/user/getUserById",
   "/clinic/getClinic",
   "/partner/getStatusClinic",
+  "/schedule/get-current-schedule",
 
+  //"/schedule/read",
+  //"/schedule/schedule-delete",
+  //"/schedule/time-delete",
+  // "/booking/doctor-read",
+  //"/booking/staff-read",
+  //"/schedule/create",
 
-  "/schedule/create",
   "/top-doctor-home",
+  "/top-specialty-home",
+  "/top-clinic-home",
   "/timeframe/read",
-  "/booking/create",
+  //"/booking/create",
   `/doctor-detail`,
   "/schedule-detail",
   "/doctor-modal",
 ]; //mảng này chứa các phần sẽ sẽ không được check quyền
-
 
 const createJWT = (payload) => {
   let key = process.env.JWT_SECRET;
@@ -81,18 +87,23 @@ function checkNoneSecureDetailPaths(path) {
 //
 
 const checkUserJwt = (req, res, next) => {
-
   //xác thực trước khi gửi xuống
   let check = checkNoneSecureDetailPaths(req.path);
-  console.log("check được phép bỏ qua hay không , ", check, " check path hiện tại >>", req.path)
-  if (
-    check
-  )
-    return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì
+  console.log(
+    "check được phép bỏ qua hay không , ",
+    check,
+    " check path hiện tại >>",
+    req.path
+  );
+  if (check) return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì
 
   let cookies = req.cookies; //lấy cookie từ client
   let tokenFromHeader = extractToken(req);
-  console.log("check cooke và tooken từ header>>>", JSON.stringify(cookies.jwt), tokenFromHeader)
+  console.log(
+    "check cooke và tooken từ header>>>",
+    JSON.stringify(cookies.jwt),
+    tokenFromHeader
+  );
   // if ((cookies && JSON.stringify(cookies.jwt) !== undefined) || tokenFromHeader !== null) {
   //tạm thời app này chưa set header
   if ((cookies && cookies.jwtd) || tokenFromHeader) {
@@ -126,16 +137,12 @@ const checkUserJwt = (req, res, next) => {
 // }
 const checkUserPermission = async (req, res, next) => {
   // xác thực quyền truy cập trước khi gửi đi
-  if (
-    checkNoneSecureDetailPaths(req.path)
-  )
-    return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì
+  if (checkNoneSecureDetailPaths(req.path)) return next(); //nếu path thuộc các đường dẫn không được phép check quyền thì
   if (req.user) {
     // let email = req.user.email; //lấy email
     // if (email === "admin@gmail.com") return next();
     let groupWithRoles = await getGroupWithRole(req.user);
     let roles = groupWithRoles.Roles; //lấy quyền của các roles
-
 
     let currentUrl = req.path; //lấy link truy cập
     if (!roles || roles.length == 0) {

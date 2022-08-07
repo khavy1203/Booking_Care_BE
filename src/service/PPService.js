@@ -11,21 +11,21 @@ const loginPPGoogle = async (userraw) => {
       include: [
         {
           model: db.Clinics,
-          attributes: ['id'],
+          attributes: ["id"],
           raw: true,
-          nest: true
+          nest: true,
         },
         {
           model: db.Specialties,
           attributes: ["id"],
           raw: true,
-          nest: true
+          nest: true,
         },
       ],
       raw: true,
-      nest: true
+      nest: true,
     });
-    console.log("check user>>>", user)
+    console.log("check user>>>", user);
     let payload = {
       id: user.id,
       email: user.email,
@@ -34,6 +34,7 @@ const loginPPGoogle = async (userraw) => {
       groupId: user.groupId,
       Clinic: user.Clinic.id,
       Specialty: user.Specialty.id,
+      phone: user.phone
     };
     console.log("check payload :>>>", payload);
     let token = createJWT(payload);
@@ -64,17 +65,17 @@ const loginPPGithub = async (userraw) => {
           model: db.Clinics,
           attributes: ["id"],
           raw: true,
-          nest: true
+          nest: true,
         },
         {
           model: db.Specialties,
           attributes: ["id"],
           raw: true,
-          nest: true
+          nest: true,
         },
       ],
       raw: true,
-      nest: true
+      nest: true,
     });
     let payload = {
       id: user.id,
@@ -84,6 +85,7 @@ const loginPPGithub = async (userraw) => {
       groupId: user.groupId,
       Clinic: user.Clinic.id,
       Specialty: user.Specialty.id,
+      phone: user.phone
     };
     console.log("check payload :>>>", payload);
     let token = createJWT(payload);

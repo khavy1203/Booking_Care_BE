@@ -20,6 +20,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
+      bookedNumber: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
       maxNumber: {
         type: Sequelize.INTEGER,
         defaultValue: 0,

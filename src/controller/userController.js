@@ -4,7 +4,7 @@ const readFunc = async (req, res) => {
   try {
     let page = req.query.page;
     let limit = req.query.limit;
-    console.log("c >>>", page, limit)
+    console.log("c >>>", page, limit);
 
     let data = await userApiServices.getUserWithPagination(+page, +limit);
 
@@ -13,7 +13,6 @@ const readFunc = async (req, res) => {
       EC: data.EC,
       DT: data.DT,
     });
-
   } catch (e) {
     console.error("check readFunc: ", e);
     return res.status(500).json({
@@ -141,7 +140,6 @@ const forgotPasswordUser = async (req, res) => {
 };
 const resetPassword = async (req, res) => {
   try {
-
     let data = await userApiServices.resetPassword(req.body);
     res.status(200).json({
       EM: data.EM,
@@ -199,7 +197,7 @@ const searchUser = async (req, res) => {
     let page = req.query.page;
     let limit = req.query.limit;
     let search = req.query.search;
-    console.log("c >>>", page, limit)
+    console.log("c >>>", page, limit);
 
     let data = await userApiServices.searchUser(search, +page, +limit);
 
@@ -208,7 +206,6 @@ const searchUser = async (req, res) => {
       EC: data.EC,
       DT: data.DT,
     });
-
   } catch (e) {
     console.error("check readFunc: ", e);
     return res.status(500).json({
@@ -229,5 +226,5 @@ module.exports = {
   resetPassword,
   updatePassword,
   getUserById,
-  searchUser
+  searchUser,
 };

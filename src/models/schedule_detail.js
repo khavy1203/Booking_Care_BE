@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Schedule_Detail.hasMany(models.Bookings, {
-        foreignKey: "schedule_detail_id",
+        foreignKey: "scheduleDetailId",
       });
       Schedule_Detail.belongsTo(models.Schedules, {
         foreignKey: "scheduleId",
@@ -22,10 +22,17 @@ module.exports = (sequelize, DataTypes) => {
   }
   Schedule_Detail.init(
     {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true,
+      },
       scheduleId: DataTypes.INTEGER,
       timeframeId: DataTypes.INTEGER,
-      currentNumber: DataTypes.INTEGER,
-      maxNumber: DataTypes.INTEGER,
+      currentNumber: DataTypes.INTEGER, //số lượng lịch hẹn cần khám
+      bookedNumber: DataTypes.INTEGER, //số lượng lịch hẹn thực tế
+      maxNumber: DataTypes.INTEGER, //Số lượng lịch hẹn tối đa
     },
     {
       sequelize,

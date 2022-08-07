@@ -16,6 +16,19 @@ const readFunc = async (req, res) => {
         })
     }
 }
+let createGroup = async (req, res) => {
+    try {
+        let info = await groupServices.createGroup(req.body);
+        return res.status(200).json(info);
+    } catch (error) {
+        console.log(error);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: "Error from the server",
+        });
+    }
+};
 module.exports = {
-    readFunc
+    readFunc,
+    createGroup
 }

@@ -8,19 +8,24 @@ const getTopDoctorHome = (limit) => {
       let doctors = await db.Users.findAll({
         limit: limit,
         order: [["createdAt", "DESC"]],
-        attributes: {
-          exclude: ["password"],
-        },
-        include: {
-          model: db.Group,
-          attributes: ["name"],
-          where: {
-            id: 2,
-            // name: {
-            //   [Op.notIn]: ["admin", "patient"],
-            // },
+        attributes: ["id", "username", "image"],
+        include: [
+          {
+            model: db.Doctorinfo,
+            attributes: ["degree_VI", "degree_EN"],
           },
-        },
+          {
+            model: db.Specialties,
+            attributes: ["nameVI", "nameEN"],
+          },
+          {
+            model: db.Group,
+            attributes: ["name"],
+            where: {
+              id: 2,
+            },
+          },
+        ],
         raw: true,
         nest: true,
       });
@@ -37,26 +42,53 @@ const getTopDoctorHome = (limit) => {
 const getInfoDoctor = async (id) => {
   try {
     let doctor = await db.Users.findOne({
-      attributes: {
-        exclude: ["password"],
-      },
+      attributes: ["id", "username", "image", "clinicId"],
       where: {
         id: id,
       },
-      include: {
-        model: db.Group,
-        attributes: ["name"],
-        where: {
-          name: {
-            [Op.notIn]: ["admin", "patient"],
-          },
+      include: [
+        {
+          model: db.Doctorinfo,
+          attributes: [
+            "id",
+            "introductionVI",
+            "noteVI",
+            "paymentVI",
+            "descriptionHTLM_VI",
+            "degree_VI",
+            "introductionEN",
+            "noteEN",
+            "paymentEN",
+            "descriptionHTLM_EN",
+            "degree_EN",
+            "price",
+          ],
         },
-      },
-      raw: false,
-      nest: true,
+        {
+          model: db.Clinics,
+          attributes: [
+            "id",
+            "nameVI",
+            "addressVI",
+            "descriptionHTML_VI",
+            "nameEN",
+            "addressEN",
+            "descriptionHTML_EN",
+            "timework",
+            "provinceId",
+            "districtId",
+            "wardId",
+          ],
+        },
+        {
+          model: db.Specialties,
+          attributes: ["id", "nameVI", "nameEN"],
+        },
+      ],
+      // raw: true,
+      // nest: true,
     });
-    if (doctor && doctor.image) {
-      doctor.image = new Buffer(doctor.image, "base64").toString("binary");
+    if (doctor) {
       return {
         EC: "0",
         EM: "Found the doctor!!!",
@@ -97,8 +129,8 @@ const getInfoDoctorModal = async (id) => {
       raw: false,
       nest: true,
     });
-    if (doctor && doctor.image) {
-      doctor.image = new Buffer(doctor.image, "base64").toString("binary");
+    if (doctor) {
+      // doctor.image = new Buffer(doctor.image, "base64").toString("binary");
       return {
         EC: "0",
         EM: "Found the doctor!!!",
@@ -130,34 +162,43 @@ const getAllDoctors = async (page, limit, specialtyId) => {
         limit: limit,
         where: {
           groupId: 2,
-          specialtyId: specialtyId
+          specialtyId: specialtyId,
         },
         attributes: {
           exclude: ["password"],
         },
-        include: [{
-          model: db.Doctorinfo,
-          attributes: ["id", "active", "price", "degree_VI", "degree_EN"],
-          where: {
-            active: 1,
-          }
-        },
-        {
-          model: db.Specialties,
-          attributes: ["id", "nameVI", "nameEN", "image"],
-
-        },
-        {
-          model: db.Clinics,
-          attributes: ["id", "status", "nameVI", "nameEN", "provinceId", "districtId", "wardId", "addressVI", "addressEN"],
-          where: {
-            status: 1,
-          }
-        },
+        include: [
+          {
+            model: db.Doctorinfo,
+            attributes: ["id", "active", "price", "degree_VI", "degree_EN"],
+            where: {
+              active: 1,
+            },
+          },
+          {
+            model: db.Specialties,
+            attributes: ["id", "nameVI", "nameEN", "image"],
+          },
+          {
+            model: db.Clinics,
+            attributes: [
+              "id",
+              "status",
+              "nameVI",
+              "nameEN",
+              "provinceId",
+              "districtId",
+              "wardId",
+              "addressVI",
+              "addressEN",
+            ],
+            where: {
+              status: 1,
+            },
+          },
         ],
         order: [["id", "DESC"]],
-        raw: true
-
+        raw: true,
       });
       //count tổng số bảng ghi, rows là mảng các phần tử
       let totalPages = Math.ceil(count / limit);
@@ -166,8 +207,7 @@ const getAllDoctors = async (page, limit, specialtyId) => {
         totalPages: totalPages,
         doctors: rows,
       };
-    }
-    else {
+    } else {
       const { count, rows } = await db.Users.findAndCountAll({
         offset: offset,
         limit: limit,
@@ -177,29 +217,38 @@ const getAllDoctors = async (page, limit, specialtyId) => {
         attributes: {
           exclude: ["password"],
         },
-        include: [{
-          model: db.Doctorinfo,
-          attributes: ["id", "active", "price", "degree_VI", "degree_EN"],
-          where: {
-            active: 1,
-          }
-        },
-        {
-          model: db.Specialties,
-          attributes: ["id", "nameVI", "nameEN", "image"],
-
-        },
-        {
-          model: db.Clinics,
-          attributes: ["id", "status", "nameVI", "nameEN", "provinceId", "districtId", "wardId", "addressVI", "addressEN"],
-          where: {
-            status: 1,
-          }
-        },
+        include: [
+          {
+            model: db.Doctorinfo,
+            attributes: ["id", "active", "price", "degree_VI", "degree_EN"],
+            where: {
+              active: 1,
+            },
+          },
+          {
+            model: db.Specialties,
+            attributes: ["id", "nameVI", "nameEN", "image"],
+          },
+          {
+            model: db.Clinics,
+            attributes: [
+              "id",
+              "status",
+              "nameVI",
+              "nameEN",
+              "provinceId",
+              "districtId",
+              "wardId",
+              "addressVI",
+              "addressEN",
+            ],
+            where: {
+              status: 1,
+            },
+          },
         ],
         order: [["id", "DESC"]],
-        raw: true
-
+        raw: true,
       });
       //count tổng số bảng ghi, rows là mảng các phần tử
       let totalPages = Math.ceil(count / limit);
@@ -228,5 +277,5 @@ module.exports = {
   getTopDoctorHome,
   getInfoDoctor,
   getInfoDoctorModal,
-  getAllDoctors
+  getAllDoctors,
 };

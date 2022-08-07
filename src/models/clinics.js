@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
 
       Clinics.hasMany(models.Schedules, { foreignKey: "clinicId" });
 
+      //Huyên: thêm để truy vấn cho booking
+      Clinics.hasMany(models.Bookings, { foreignKey: "clinicId" });
     }
   }
   Clinics.init(
@@ -35,8 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       wardId: DataTypes.INTEGER,
       linkfile: DataTypes.STRING,
 
-      status: DataTypes.INTEGER,//0 đợi duyệt, 1 là hoạt động, 2 là tạm dừng
-
+      status: DataTypes.INTEGER, //0 đợi duyệt, 1 là hoạt động, 2 là tạm dừng
     },
     {
       sequelize,

@@ -37,13 +37,14 @@ const initApiRoutes = (app) => {
   routes.get("/user/getUserById", userController.getUserById);
   routes.get("/user/searchUser", userController.searchUser);
 
+
+
   routes.post("/reset-password", userController.resetPassword);
-
-
 
   // routes.get("/account", userController.getUserAccount);
 
   routes.get("/group/read", groupController.readFunc);
+  routes.post("/group/createGroup", groupController.createGroup);
 
   //huyên: doctor router
   routes.get("/top-doctor-home", doctorController.getTopDoctorHome);
@@ -52,8 +53,25 @@ const initApiRoutes = (app) => {
   routes.get(`/doctor/getAllDoctors`, doctorController.getAllDoctors);
 
   //huyên: schedule router
+
   routes.get("/schedule-detail", scheduleController.getSchedule);
   routes.post("/schedule/create", scheduleController.createFunc);
+  routes.get("/schedule/read", scheduleController.readFunc);
+  routes.get(
+    "/schedule/get-schedule-detail",
+    scheduleController.getScheduleDetail
+  );
+
+  routes.get(
+    "/schedule/get-current-schedule",
+    scheduleController.getCurrentSchedule
+  );
+  routes.put("/schedule/update", scheduleController.updateFunc);
+  routes.delete(
+    "/schedule/schedule-delete",
+    scheduleController.deleteScheduleFunc
+  );
+  routes.delete("/schedule/time-delete", scheduleController.deleteTimeFunc);
 
   //huyên: timeframe router
   routes.get("/timeframe/read", timeframeController.readFunc);
@@ -67,6 +85,11 @@ const initApiRoutes = (app) => {
 
   //huyên: booking routes
   routes.post("/booking/create", bookingController.createFunc);
+  routes.get("/booking/partner-read", bookingController.partnerReadFunc);
+  routes.get("/booking/doctor-read", bookingController.doctorReadFunc);
+  routes.get("/booking/patient-read", bookingController.patientReadFunc);
+  routes.put("/booking/update", bookingController.updateFunc); //hàm update chỉ là cập nhật trạng thá
+  routes.put("/booking/change-booking", bookingController.changeBookingFunc); //hàm update chỉ là cập nhật trạng thái
 
   //auth route
   //google
@@ -91,40 +114,62 @@ const initApiRoutes = (app) => {
     loginRegisterController.handleLoginPPGithubSuccess
   ); //callback dữ liệu
 
-  //huyên: specialty router
+  //huyên: dùng cho trang chủ
+  routes.get("/top-specialty-home", specialtyController.getTopSpecialtyHome);
+
   routes.get("/specialty/read", specialtyController.readFunc);
   routes.post("/specialty/create", specialtyController.createSpecialty);
   routes.put("/specialty/update", specialtyController.updateFunc);
-  routes.delete("/specialty/delete", specialtyController.deleteFunc)
-  routes.get("/specialty/fetchAllSpecialOfSupport", specialtyController.fetchAllSpecialOfSupport);
-
-
+  routes.delete("/specialty/delete", specialtyController.deleteFunc);
+  routes.get(
+    "/specialty/fetchAllSpecialOfSupport",
+    specialtyController.fetchAllSpecialOfSupport
+  );
+  routes.get("/specialty/searchSpecial", specialtyController.searchSpecial);
 
   //clinic
+  routes.get("/top-clinic-home", clinicController.getTopClinicHome);
+
   routes.get("/clinic/read", clinicController.readFunc);
   routes.post("/clinic/create", clinicController.createFunc);
   routes.put("/clinic/update", clinicController.updateFunc);
   routes.delete("/clinic/delete", clinicController.deleteFunc);
   routes.get("/clinic/getClinic", clinicController.getClinic);
-  routes.get("/clinic/fetchAllClinicsOfSupport", clinicController.fetchAllClinicsOfSupport);
+  routes.get(
+    "/clinic/fetchAllClinicsOfSupport",
+    clinicController.fetchAllClinicsOfSupport
+  );
 
+  routes.get("/clinic/searchClinic", clinicController.searchClinic);
 
 
   routes.get("/doctor-page", clinicController.fetchDoctorOfCLinic);
   routes.get("/clinic-page", clinicController.getInforClininicOfUserOnPage);
 
-
   //partner
   routes.post("/partner/registerClinic", partnerController.registerClinicFunc);
-  routes.post("/partner/registerDoctorClinic", partnerController.registerDoctorClinic);
+  routes.post(
+    "/partner/registerDoctorClinic",
+    partnerController.registerDoctorClinic
+  );
   routes.get("/partner/getStatusClinic", partnerController.getStatusClinic);
   routes.get("/partner/getSpecialty", partnerController.getSpecialty);
-  routes.get("/partner/getDoctorsOfClinic", partnerController.getDoctorsOfClinic);
-  routes.post("/partner/deleteDoctorOfClinic", partnerController.deleteDoctorOfClinic);
-  routes.post("/partner/updateDoctorOfClinic", partnerController.updateDoctorOfClinic);
-  routes.post("/partner/addImformationClinic", partnerController.addImformationClinic);
-
-
+  routes.get(
+    "/partner/getDoctorsOfClinic",
+    partnerController.getDoctorsOfClinic
+  );
+  routes.post(
+    "/partner/deleteDoctorOfClinic",
+    partnerController.deleteDoctorOfClinic
+  );
+  routes.post(
+    "/partner/updateDoctorOfClinic",
+    partnerController.updateDoctorOfClinic
+  );
+  routes.post(
+    "/partner/addImformationClinic",
+    partnerController.addImformationClinic
+  );
 
   //province
   routes.get("/provinces/read", provinceController.readFunc);

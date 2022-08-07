@@ -92,19 +92,19 @@ const loginUser = async (rawUserAccount) => {
       include: [
         {
           model: db.Clinics,
-          attributes: ['id'],
+          attributes: ["id"],
           raw: true,
-          nest: true
+          nest: true,
         },
         {
           model: db.Specialties,
           attributes: ["id", "nameVI"],
           raw: true,
-          nest: true
+          nest: true,
         },
       ],
       raw: true,
-      nest: true
+      nest: true,
     });
     if (user) {
       console.log("found user", user);
@@ -122,6 +122,7 @@ const loginUser = async (rawUserAccount) => {
           groupId: user.groupId,
           Clinic: user.Clinic.id,
           Specialty: user.Specialty.id,
+          phone: user.phone
         };
         console.log("check payload :>>>", payload);
         let token = createJWT(payload);

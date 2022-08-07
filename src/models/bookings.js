@@ -9,12 +9,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Bookings.belongsTo(models.Users, { foreignKey: "doctorId" });
-      Bookings.belongsTo(models.Users, { foreignKey: "patientId" });
-      Bookings.belongsTo(models.Schedule_Detail, {
-        foreignKey: "schedule_detail_id",
+      //Huyên: thêm alias để dùng cho bookingAPIService
+      Bookings.belongsTo(models.Users, {
+        as: "Doctor",
+        foreignKey: "doctorId",
       });
+      Bookings.belongsTo(models.Users, {
+        as: "Patient",
+        foreignKey: "patientId",
+      });
+      Bookings.belongsTo(models.Schedule_Detail, {
+        foreignKey: "scheduleDetailId",
+      });
+
       Bookings.belongsTo(models.Bookingstatus, { foreignKey: "statusId" });
+
+      //Huyên: thêm để truy vấn cho booking
+      Bookings.belongsTo(models.Clinics, { foreignKey: "clinicId" });
     }
   }
   Bookings.init(
@@ -22,9 +33,12 @@ module.exports = (sequelize, DataTypes) => {
       statusId: DataTypes.INTEGER,
       doctorId: DataTypes.INTEGER,
       patientId: DataTypes.INTEGER,
-      schedule_detail_id: DataTypes.INTEGER,
-      date: DataTypes.STRING,
-      // date: DataTypes.DATE,
+      scheduleDetailId: DataTypes.INTEGER,
+      reason: DataTypes.TEXT,
+      note: DataTypes.TEXT,
+      date: DataTypes.DATE,
+      // timestamp: DataTypes.STRING,
+      clinicId: DataTypes.INTEGER,
     },
     {
       sequelize,
