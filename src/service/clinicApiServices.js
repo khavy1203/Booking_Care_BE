@@ -5,6 +5,9 @@ import loginRegisterService from "./loginRegisterService.js";
 const getTopClinic = async (limit) => {
   try {
     const clinics = await db.Clinics.findAll({
+      where: {
+        status: 1,
+      },
       limit: limit,
       attributes: ["id", "image", "nameVI", "nameEN"],
       order: [["id", "DESC"]],
