@@ -285,7 +285,24 @@ const updateDoctorOfClinic = async (dataDoctors) => {
       }
       if (finDoctorInfo) {
         console.log("check doctorinfo >>>", finDoctorInfo);
-        finDoctorInfo.set(dataDoctors);
+        // finDoctorInfo.set(dataDoctors);
+        finDoctorInfo.set({
+          introductionVI: dataDoctors.introductionVI,
+          noteVI: dataDoctors.noteVI,
+          paymentVI: dataDoctors.paymentVI,
+          descriptionHTLM_VI: dataDoctors.descriptionHTML_VI,
+          descriptionMarkdown_VI: dataDoctors.descriptionMarkdown_VI,
+          degree_VI: dataDoctors.degree_VI,
+          introductionEN: dataDoctors.introductionEN,
+          noteEN: dataDoctors.noteEN,
+          paymentEN: dataDoctors.paymentEN,
+          descriptionHTLM_EN: dataDoctors.descriptionHTML_EN,
+          descriptionMarkdown_EN: dataDoctors.descriptionMarkdown_EN,
+          degree_EN: dataDoctors.degree_EN,
+          price: dataDoctors.price,
+          active: dataDoctors.active,
+          linkfile: dataDoctors.linkfile,
+        });
         let query = await finDoctorInfo.save();
         console.log("check qurery doctorinfo>>", query);
       }
