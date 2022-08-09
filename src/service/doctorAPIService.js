@@ -13,6 +13,9 @@ const getTopDoctorHome = (limit) => {
           {
             model: db.Doctorinfo,
             attributes: ["degree_VI", "degree_EN"],
+            where: {
+              active: 1,
+            },
           },
           {
             model: db.Specialties,
