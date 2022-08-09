@@ -37,8 +37,6 @@ const initApiRoutes = (app) => {
   routes.get("/user/getUserById", userController.getUserById);
   routes.get("/user/searchUser", userController.searchUser);
 
-
-
   routes.post("/reset-password", userController.resetPassword);
 
   // routes.get("/account", userController.getUserAccount);
@@ -141,7 +139,6 @@ const initApiRoutes = (app) => {
   );
 
   routes.get("/clinic/searchClinic", clinicController.searchClinic);
-
 
   routes.get("/doctor-page", clinicController.fetchDoctorOfCLinic);
   routes.get("/clinic-page", clinicController.getInforClininicOfUserOnPage);

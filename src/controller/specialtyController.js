@@ -157,5 +157,5 @@ module.exports = {
   deleteFunc,
   fetchAllSpecialOfSupport,
   getTopSpecialtyHome,
-  searchSpecial
+  searchSpecial,
 };

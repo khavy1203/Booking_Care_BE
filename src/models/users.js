@@ -33,13 +33,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "doctorId",
       });
 
-
       Users.belongsTo(models.Group, { foreignKey: "groupId" });
     }
   }
   Users.init(
     {
-
       email: DataTypes.STRING,
       password: DataTypes.STRING,
       username: DataTypes.STRING,

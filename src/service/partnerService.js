@@ -283,26 +283,24 @@ const updateDoctorOfClinic = async (dataDoctors) => {
           where: {
             phone: dataDoctors.phone,
             id: {
-              [Op.ne]: dataDoctors.idUser
-            }
+              [Op.ne]: dataDoctors.idUser,
+            },
           },
         });
         if (!findPhoneExist) {
           findUser.set({
             specialtyId: dataDoctors.specialIdUser,
             username: dataDoctors.username,
-            phone: dataDoctors.phone
+            phone: dataDoctors.phone,
           });
           await findUser.save();
-        }
-        else {
+        } else {
           resolve({
             EM: "Phone tồn tại",
             EC: 1,
             DT: [],
           });
         }
-
       }
       if (finDoctorInfo) {
         console.log("check doctorinfo >>>", finDoctorInfo);

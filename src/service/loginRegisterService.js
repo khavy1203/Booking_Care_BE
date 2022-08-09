@@ -122,7 +122,7 @@ const loginUser = async (rawUserAccount) => {
           groupId: user.groupId,
           Clinic: user.Clinic.id,
           Specialty: user.Specialty.id,
-          phone: user.phone
+          phone: user.phone,
         };
         console.log("check payload :>>>", payload);
         let token = createJWT(payload);

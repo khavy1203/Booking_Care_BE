@@ -3,7 +3,6 @@ import db from "../models/index.js"; //connectdb
 const sequelize = require("sequelize");
 const { Op } = require("sequelize");
 
-
 //Huyên: Lấy tên với ảnh chuyên khoa hiển thị thôi
 const getTopSpecialty = async (limit) => {
   try {
@@ -99,21 +98,19 @@ let createSpecialty = (data) => {
           where: {
             [Op.or]: [
               {
-                nameVI:
-                {
-                  [Op.like]: '%' + data.name + '%'
-                }
+                nameVI: {
+                  [Op.like]: "%" + data.name + "%",
+                },
               },
               {
-                nameEN:
-                {
-                  [Op.like]: '%' + data.name + '%'
-                }
+                nameEN: {
+                  [Op.like]: "%" + data.name + "%",
+                },
               },
-            ]
-          }
-          , raw: true
-        })
+            ],
+          },
+          raw: true,
+        });
         if (!findSpecial) {
           await db.Specialties.create({
             image: data.image || "",
@@ -206,19 +203,19 @@ const fetchAllSpecialOfSupport = async (page, limit) => {
       include: [
         {
           model: db.Users,
-          attributes: []
-        }
+          attributes: [],
+        },
       ],
 
       attributes: [
-        "id", "nameVI", "nameEN",
-        [
-          sequelize.fn('COUNT', sequelize.col('Users.id')), 'userCount',
-        ]
+        "id",
+        "nameVI",
+        "nameEN",
+        [sequelize.fn("COUNT", sequelize.col("Users.id")), "userCount"],
       ],
       // having: sequelize.where([sequelize.fn('[COUNT', sequelize.col('Users.id'))]
       // ),
-      group: ['Specialties.id'],
+      group: ["Specialties.id"],
       order: [["id", "DESC"]],
     });
     //count tổng số bảng ghi, rows là mảng các phần tử
@@ -270,19 +267,19 @@ const searchSpecial = async (search, page, limit) => {
         include: [
           {
             model: db.Users,
-            attributes: []
-          }
+            attributes: [],
+          },
         ],
 
         attributes: [
-          "id", "nameVI", "nameEN",
-          [
-            sequelize.fn('COUNT', sequelize.col('Users.id')), 'userCount',
-          ]
+          "id",
+          "nameVI",
+          "nameEN",
+          [sequelize.fn("COUNT", sequelize.col("Users.id")), "userCount"],
         ],
         // having: sequelize.where([sequelize.fn('[COUNT', sequelize.col('Users.id'))]
         // ),
-        group: ['Specialties.id'],
+        group: ["Specialties.id"],
 
         order: [["id", "DESC"]],
       });
@@ -316,5 +313,5 @@ module.exports = {
   deleteSpecialty,
   fetchAllSpecialOfSupport,
   getTopSpecialty,
-  searchSpecial
+  searchSpecial,
 };

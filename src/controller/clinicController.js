@@ -255,5 +255,5 @@ module.exports = {
   getClinic,
   fetchAllClinicsOfSupport,
   getTopClinicHome,
-  searchClinic
+  searchClinic,
 };
