@@ -283,30 +283,45 @@ const updateDoctorOfClinic = async (dataDoctors) => {
           where: {
             phone: dataDoctors.phone,
             id: {
-              [Op.ne]: dataDoctors.idUser
-            }
+              [Op.ne]: dataDoctors.idUser,
+            },
           },
         });
         if (!findPhoneExist) {
           findUser.set({
             specialtyId: dataDoctors.specialIdUser,
             username: dataDoctors.username,
-            phone: dataDoctors.phone
+            phone: dataDoctors.phone,
           });
           await findUser.save();
-        }
-        else {
+        } else {
           resolve({
             EM: "Phone tồn tại",
             EC: 1,
             DT: [],
           });
         }
-
       }
       if (finDoctorInfo) {
         console.log("check doctorinfo >>>", finDoctorInfo);
-        finDoctorInfo.set(dataDoctors);
+        //finDoctorInfo.set(dataDoctors);
+        finDoctorInfo.set({
+          introductionVI: dataDoctors.introductionVI,
+          noteVI: dataDoctors.noteVI,
+          paymentVI: dataDoctors.paymentVI,
+          descriptionHTLM_VI: dataDoctors.descriptionHTML_VI,
+          descriptionMarkdown_VI: dataDoctors.descriptionMarkdown_VI,
+          degree_VI: dataDoctors.degree_VI,
+          introductionEN: dataDoctors.introductionEN,
+          noteEN: dataDoctors.noteEN,
+          paymentEN: dataDoctors.paymentEN,
+          descriptionHTLM_EN: dataDoctors.descriptionHTML_EN,
+          descriptionMarkdown_EN: dataDoctors.descriptionMarkdown_EN,
+          degree_EN: dataDoctors.degree_EN,
+          price: dataDoctors.price,
+          active: dataDoctors.active,
+          linkfile: dataDoctors.linkfile,
+        });
         let query = await finDoctorInfo.save();
         console.log("check qurery doctorinfo>>", query);
       }
@@ -333,15 +348,16 @@ const addImformationClinic = async (Clinic) => {
     if (findClinic) {
       findClinic.set(Clinic);
       await findClinic.save();
-      return {
-        EM: "Update success",
-        EC: "0",
-        DT: "",
-      };
+
+    }
+    let findUser = await db.Users.findOne({ where: { id: Clinic.idUser } });
+    if (findUser && Clinic.imgIconUser) {
+      findUser.set({ image: Clinic.imgIconUser })
+      await findUser.save();
     }
     return {
-      EM: "Not find or something error",
-      EC: "1",
+      EM: "Update success",
+      EC: "0",
       DT: "",
     };
   } catch (e) {

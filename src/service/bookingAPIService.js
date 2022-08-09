@@ -3,14 +3,23 @@ import db from "../models/index.js";
 import { Op } from "sequelize";
 import _, { update } from "lodash";
 import moment from "moment";
+
+const isAllCancel = (list) => {
+  for (const item of list) {
+    if (item.statusId !== 3) return false;
+  }
+  return true;
+};
+
 const createBooking = async (data) => {
   try {
     let foundScheduleDetail = await db.Schedule_Detail.findOne({
       where: { id: data.scheduleDetailId },
     });
 
-    //có thể bác sĩ xóa đúng lúc bệnh nhân đang đặt => kiểm tra tồn tại cái giờ khám
+    //có thể bác sĩ xóa đúng lúc bệnh nhân đang đặt => kiểm tra tồn tại giờ khám cần đặtyy
     if (foundScheduleDetail) {
+      //kiểm tra giờ khám còn đủ chỗ đặt không
       if (+foundScheduleDetail.maxNumber > +foundScheduleDetail.currentNumber) {
         if (
           !data.doctorId ||
@@ -22,21 +31,57 @@ const createBooking = async (data) => {
         ) {
           return {
             EM: `Missing parameter`,
-            EC: "2",
+            EC: "3",
             DT: "",
           };
         }
-        //tạo lịch khám
-        //tìm xem có booking nào mà bệnh nhân đặt trong cùng ngày cùng bác sĩ ko, nếu có thì ko dc đặt, ngược lại thì dc
-        let result = await db.Bookings.findOrCreate({
+
+        //tìm xem có booking nào của bệnh nhân đặt cùng ngày cùng bác sĩ hay ko,
+        //nếu ko có thì dc tạo, ngược lại thì kiểm tra dc
+        let foundBooking = await db.Bookings.findAll({
           where: {
-            [Op.and]: {
+            patientId: data.patientId,
+            doctorId: data.doctorId,
+            date: data.date,
+          },
+        });
+
+        let check = false;
+        //tìm thấy booking đặt cùng ngày
+        if (foundBooking) {
+          //kiểm tra xem các booking này có hủy chưa
+          //nếu tất cả booking cùng ngày đã hủy
+          //thì kiểm tra xem có booking nào đã đặt vào giờ khám cần đặt chưa
+          //nếu không thì cho phép đặt lịch, có thì không cho
+          let allCancel = isAllCancel(foundBooking);
+          let foundExist = await db.Bookings.findOne({
+            where: {
               patientId: data.patientId,
               doctorId: data.doctorId,
               date: data.date,
+              scheduleDetailId: data.scheduleDetailId,
             },
-          },
-          defaults: {
+          });
+          if (foundExist)
+            return {
+              EM: `You already booked an appointment for this time!!!`,
+              EC: "4",
+              DT: "",
+            };
+          if (allCancel === false)
+            return {
+              EM: `You already booked an appointment for this date, please cancel all same booking's date to book new time!!!`,
+              EC: "5",
+              DT: "",
+            };
+          check = true;
+        }
+
+        //nếu ko có booking nào cùng ngày
+        //hoặc có booking cùng ngày nhưng đã hủy
+        //thì cho tạo
+        if (!foundBooking || check === true) {
+          let result = await db.Bookings.create({
             statusId: 1,
             patientId: data.patientId,
             doctorId: data.doctorId,
@@ -44,44 +89,26 @@ const createBooking = async (data) => {
             reason: data.reason,
             scheduleDetailId: data.scheduleDetailId,
             clinicId: data.clinicId,
-          },
-        });
-
-        //console.log(">>>>>>>>>>>>>>>>check booking result", result[1]);
-        //nếu tìm ko thấy thì tạo lịch hẹn, ko thì thông báo ko đặt dc
-        //kết quả trả về của findOrCreate là array, array[1] là phân biệt find hoặc create
-        if (result[1]) {
-          //lấy ra giờ khám để cập nhật currentNumber
-
-          if (foundScheduleDetail) {
-            let newCurrentNumber = +foundScheduleDetail.currentNumber + 1;
-            let newBookedNumber = +foundScheduleDetail.bookedNumber + 1;
-            foundScheduleDetail.set({
-              currentNumber: newCurrentNumber,
-              bookedNumber: newBookedNumber,
-            });
-            await foundScheduleDetail.save();
-          }
-
+          });
+          let newCurrentNumber = +foundScheduleDetail.currentNumber + 1;
+          let newBookedNumber = +foundScheduleDetail.bookedNumber + 1;
+          foundScheduleDetail.set({
+            currentNumber: newCurrentNumber,
+            bookedNumber: newBookedNumber,
+          });
+          await foundScheduleDetail.save();
           return {
             EM: `Create booking succeeds!!!`,
             EC: 0,
             DT: result,
           };
-        } else {
-          return {
-            EM: `You already booked an appointment for this date, please book another date!!!`,
-            EC: "4",
-            DT: "",
-          };
         }
-      } else {
-        return {
-          EM: "This time is full!!!",
-          EC: "3",
-          DT: "",
-        };
       }
+      return {
+        EM: "This time is full!!!",
+        EC: "2",
+        DT: "",
+      };
     }
 
     return {
@@ -98,6 +125,170 @@ const createBooking = async (data) => {
     };
   }
 };
+
+// const createBooking = async (data) => {
+//   try {
+//     let foundScheduleDetail = await db.Schedule_Detail.findOne({
+//       where: { id: data.scheduleDetailId },
+//     });
+
+//     //có thể bác sĩ xóa đúng lúc bệnh nhân đang đặt => kiểm tra tồn tại giờ khám cần đặtyy
+//     if (foundScheduleDetail) {
+//       if (+foundScheduleDetail.maxNumber > +foundScheduleDetail.currentNumber) {
+//         if (
+//           !data.doctorId ||
+//           !data.scheduleDetailId ||
+//           !data.date ||
+//           !data.reason ||
+//           !data.patientId ||
+//           !data.clinicId
+//         ) {
+//           return {
+//             EM: `Missing parameter`,
+//             EC: "2",
+//             DT: "",
+//           };
+//         }
+//         //tạo lịch khám
+//         //tìm xem có booking nào mà bệnh nhân đặt trong cùng ngày cùng bác sĩ ko, nếu có thì ko dc đặt, ngược lại thì dc
+//         let result = await db.Bookings.findOrCreate({
+//           where: {
+//             [Op.and]: {
+//               patientId: data.patientId,
+//               doctorId: data.doctorId,
+//               date: data.date,
+//             },
+//           },
+//           defaults: {
+//             statusId: 1,
+//             patientId: data.patientId,
+//             doctorId: data.doctorId,
+//             date: data.date,
+//             reason: data.reason,
+//             scheduleDetailId: data.scheduleDetailId,
+//             clinicId: data.clinicId,
+//           },
+//         });
+
+//         //console.log(">>>>>>>>>>>>>>>>check booking result", result[1]);
+//         //nếu tìm ko thấy thì tạo lịch hẹn, ko thì thông báo ko đặt dc
+//         //kết quả trả về của findOrCreate là array, array[1] là phân biệt find hoặc create
+//         if (result[1]) {
+//           //lấy ra giờ khám để cập nhật currentNumber
+
+//           if (foundScheduleDetail) {
+//             let newCurrentNumber = +foundScheduleDetail.currentNumber + 1;
+//             let newBookedNumber = +foundScheduleDetail.bookedNumber + 1;
+//             foundScheduleDetail.set({
+//               currentNumber: newCurrentNumber,
+//               bookedNumber: newBookedNumber,
+//             });
+//             await foundScheduleDetail.save();
+//           }
+
+//           return {
+//             EM: `Create booking succeeds!!!`,
+//             EC: 0,
+//             DT: result,
+//           };
+//         } else {
+//           //Nếu tất cả lịch hẹn trong cùng 1 ngày của bệnh nhân đều hủy thì có thể thêm mới.
+//           //Nếu đã hủy 8h mà đặt lại 8h thì ko dc đặt
+//           //cần tìm xem lịch hẹn cần thêm mới đã trùng chưa
+//           // let lstExist = await db.Bookings.findOne({
+//           //   where: {
+//           //     [Op.and]: {
+//           //       patientId: data.patientId,
+//           //       doctorId: data.doctorId,
+//           //       date: data.date,
+//           //       scheduleDetailId: data.scheduleDetailId,
+//           //     },
+//           //   },
+//           //   defaults: {
+//           //     statusId: 1,
+//           //     patientId: data.patientId,
+//           //     doctorId: data.doctorId,
+//           //     date: data.date,
+//           //     reason: data.reason,
+//           //     scheduleDetailId: data.scheduleDetailId,
+//           //     clinicId: data.clinicId,
+//           //   },
+//           // });
+
+//           // if (lstExist){
+//           //   return {
+//           //     EM: `You already booked an appointment for this date, please book another date!!!`,
+//           //     EC: "4",
+//           //     DT: "",
+//           //   };
+//           // }
+
+//           // let cancelBooking = await db.Bookings.findAll({
+//           //   where: {
+//           //     [Op.and]: {
+//           //       patientId: data.patientId,
+//           //       doctorId: data.doctorId,
+//           //       date: data.date,
+//           //       scheduleDetailId: data.scheduleDetailId,
+//           //     },
+//           //   },
+//           // })
+
+//           // let check = isAllCancel(cancelBooking);
+
+//           // if(check){
+//           //   await db.Bookings.create({
+//           //     statusId: 1,
+//           //       patientId: data.patientId,
+//           //       doctorId: data.doctorId,
+//           //       date: data.date,
+//           //       reason: data.reason,
+//           //       scheduleDetailId: data.scheduleDetailId,
+//           //       clinicId: data.clinicId,
+//           //   });
+//           //   let newCurrentNumber = +foundScheduleDetail.currentNumber + 1;
+//           //   let newBookedNumber = +foundScheduleDetail.bookedNumber + 1;
+//           //   foundScheduleDetail.set({
+//           //     currentNumber: newCurrentNumber,
+//           //     bookedNumber: newBookedNumber,
+//           //   });
+//           //   await foundScheduleDetail.save();
+//           //   return {
+//           //     EM: `Create booking succeeds!!!`,
+//           //     EC: "0",
+//           //     DT: "",
+//           //   };
+//           // }
+
+//           return {
+//             EM: `You already booked an appointment for this date, please book another date!!!`,
+//             EC: "5",
+//             DT: "",
+//           };
+//         }
+//       } else {
+//         return {
+//           EM: "This time is full!!!",
+//           EC: "3",
+//           DT: "",
+//         };
+//       }
+//     }
+
+//     return {
+//       EM: "Chosen time is not exist, maybe it was deleted",
+//       EC: "1",
+//       DT: "",
+//     };
+//   } catch (error) {
+//     console.log("check error create booking >>>", error);
+//     return {
+//       EM: "Something wrong ...",
+//       EC: "-2",
+//       DT: "",
+//     };
+//   }
+// };
 
 const partnerReadBooking = async (partner, selectedTab) => {
   try {
@@ -144,7 +335,7 @@ const partnerReadBooking = async (partner, selectedTab) => {
           },
         },
       ],
-      order: [["date", "DESC"]],
+      order: [["createdAt", "ASC"]],
     });
 
     if (bookings) {
@@ -172,7 +363,7 @@ const partnerReadBooking = async (partner, selectedTab) => {
 const doctorReadBooking = async (date, doctorId) => {
   try {
     let bookings = await db.Bookings.findAll({
-      attributes: ["id", "reason", "date", "statusId"],
+      attributes: ["id", "reason", "date", "statusId", "note"],
       where: {
         [Op.and]: {
           doctorId: doctorId,
@@ -210,7 +401,7 @@ const doctorReadBooking = async (date, doctorId) => {
           },
         },
       ],
-      order: [["date", "DESC"]],
+      order: [["createdAt", "ASC"]],
     });
 
     if (bookings) {
@@ -280,7 +471,7 @@ const patientReadBooking = async (patientId) => {
           ],
         },
       ],
-      order: [["date", "DESC"]],
+      order: [["createdAt", "DESC"]],
     });
 
     if (bookings) {
@@ -307,7 +498,7 @@ const patientReadBooking = async (patientId) => {
 
 //hàm cập nhật trạng thái booking dành cho bác sĩ, đối tác
 const updateBooking = async (data) => {
-  console.log("kiểm tra updateBooking", data);
+  //console.log("kiểm tra updateBooking", data);
   try {
     let findBooking = await db.Bookings.findOne({
       where: { id: data.bookingId },
@@ -315,16 +506,32 @@ const updateBooking = async (data) => {
     if (findBooking) {
       if (data.reqCode === 1) {
         //reqCode === 1: yêu cầu cập nhật status từ CHỜ TIẾP NHẬN -> CHỜ XÁC NHẬN
+        if (findBooking.statusId !== 1) {
+          return {
+            EM: "Trạng thái lịch hẹn vừa thay đổi, không thể thao tác",
+            EC: "2",
+            DT: "",
+          };
+        }
+
         findBooking.set({ statusId: 2 });
         let res = await findBooking.save();
         return {
-          EM: "Update success",
+          EM: "Đã tiếp nhận",
           EC: "0",
           DT: res,
         };
       } else if (data.reqCode === 2) {
         // reqCode === 2: yêu cầu cập nhật status sang HỦY
-        findBooking.set({ statusId: 3 });
+        if (findBooking.statusId > 5) {
+          return {
+            EM: "Trạng thái lịch hẹn vừa thay đổi, không thể thao tác",
+            EC: "2",
+            DT: "",
+          };
+        }
+
+        findBooking.set({ statusId: 3, note: data.note });
         let res = await findBooking.save();
         let foundScheduleDetail = await db.Schedule_Detail.findOne({
           where: { id: findBooking.scheduleDetailId },
@@ -335,34 +542,61 @@ const updateBooking = async (data) => {
           await foundScheduleDetail.save();
         }
         return {
-          EM: "Update success",
+          EM: "Đã hủy",
           EC: "0",
           DT: res,
         };
       } else if (data.reqCode === 3) {
         //reqCode === 3: yêu cầu cập nhật status từ CHỜ XÁC NHẬN -> ĐÃ XÁC NHẬN
+
+        if (findBooking.statusId !== 2) {
+          return {
+            EM: "Trạng thái lịch hẹn vừa thay đổi, không thể thao tác",
+            EC: "2",
+            DT: "",
+          };
+        }
+
         findBooking.set({ statusId: 4 });
         let res = await findBooking.save();
         return {
-          EM: "Update success",
+          EM: "Đã xác nhận",
           EC: "0",
           DT: res,
         };
       } else if (data.reqCode === 4) {
         //reqCode === 4: yêu cầu cập nhật status từ ĐÃ XÁC NHẬN -> ĐÃ KHÁM
-        findBooking.set({ statusId: 5 });
+
+        if (findBooking.statusId !== 4) {
+          return {
+            EM: "Trạng thái lịch hẹn vừa thay đổi, không thể thao tác",
+            EC: "2",
+            DT: "",
+          };
+        }
+
+        findBooking.set({ statusId: 5, note: data.note });
         let res = await findBooking.save();
         return {
-          EM: "Update success",
+          EM: "Đã khám",
           EC: "0",
           DT: res,
         };
       } else if (data.reqCode === 5) {
         //reqCode === 5: yêu cầu cập nhật status từ ĐÃ XÁC NHẬN -> kHÔNG ĐI KHÁM
+
+        if (findBooking.statusId !== 4) {
+          return {
+            EM: "Trạng thái lịch hẹn vừa thay đổi, không thể thao tác",
+            EC: "2",
+            DT: "",
+          };
+        }
+
         findBooking.set({ statusId: 6 });
         let res = await findBooking.save();
         return {
-          EM: "Update success",
+          EM: "Xác nhận không đi khám",
           EC: "0",
           DT: res,
         };
@@ -383,7 +617,7 @@ const updateBooking = async (data) => {
   }
 };
 
-//hàm cập nhật trạng thái booking dành cho bác sĩ, đối tác
+//hàm thay đổi lịch hẹn dành cho bệnh nhân
 const changeBooking = async (patient, data) => {
   // console.log("kiểm tra changeBooking", patient, data);
   try {
@@ -394,7 +628,17 @@ const changeBooking = async (patient, data) => {
         model: db.Schedule_Detail,
       },
     });
+
     if (updateBooking) {
+      //Booking cần thay đổi phải ở trạng thái vừa tạo hoặc vừa tiếp nhận
+      if (updateBooking.statusId > 2) {
+        return {
+          EM: "Lịch hẹn này đã được xác nhận, không thể đổi",
+          EC: "1",
+          DT: "",
+        };
+      }
+
       //Cần biết xem bệnh nhân có booking nào trước đó đã đặt vào giờ khám cần đổi trong cùng ngày hay ko
       let findBooking = await db.Bookings.findOne({
         where: {
@@ -443,6 +687,7 @@ const changeBooking = async (patient, data) => {
               updateBooking.set({
                 scheduleDetailId: data.scheduleDetailId,
                 reason: data.reason,
+                statusId: 1,
               });
             } else {
               //Khác ngày thì đổi ngày và giờ
@@ -461,6 +706,7 @@ const changeBooking = async (patient, data) => {
                   scheduleDetailId: data.scheduleDetailId,
                   reason: data.reason,
                   date: data.chosenDate,
+                  statusId: 1,
                 });
               } else {
                 //Nếu đã có thì thông báo không cho cập nhật
@@ -504,11 +750,6 @@ const changeBooking = async (patient, data) => {
             DT: "",
           };
         }
-        return {
-          EM: "Không thể chuyển sang thời gian này vì bạn đã đặt rồi...",
-          EC: "2",
-          DT: "",
-        };
       } else {
         return {
           EM: "Không thể chuyển sang thời gian này vì bạn đã đặt rồi...",

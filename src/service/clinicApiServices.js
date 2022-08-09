@@ -3,12 +3,13 @@ import loginRegisterService from "./loginRegisterService.js";
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
 
-
-
 //Huyên: Lấy tên với ảnh phòng khám hiển thị thôi
 const getTopClinic = async (limit) => {
   try {
     const clinics = await db.Clinics.findAll({
+      where: {
+        status: 1,
+      },
       limit: limit,
       attributes: ["id", "image", "nameVI", "nameEN"],
       order: [["id", "DESC"]],
@@ -188,13 +189,12 @@ const fetchDoctorOfCLinic = async (page, limit, id) => {
     let lstSpecialOfClinic = await db.Specialties.findAll({
       include: [
         {
-
           model: db.Users,
           include: [
             {
               model: db.Doctorinfo,
               attributes: ["id", "active"],
-            }
+            },
           ],
           where: {
             clinicId: id,
@@ -203,17 +203,19 @@ const fetchDoctorOfCLinic = async (page, limit, id) => {
         },
       ],
       attributes: [
-        "id", "nameVI", "nameEN", "descriptionHTML_VI", "descriptionHTML_EN",
-        [
-          sequelize.fn('COUNT', sequelize.col('Users.id')), 'userCount'
-        ]
+        "id",
+        "nameVI",
+        "nameEN",
+        "descriptionHTML_VI",
+        "descriptionHTML_EN",
+        [sequelize.fn("COUNT", sequelize.col("Users.id")), "userCount"],
       ],
       where: {
-        '$Users.Doctorinfo.active$': 1,
+        "$Users.Doctorinfo.active$": 1,
       },
-      group: ['Specialties.id'],
-      raw: true
-    })
+      group: ["Specialties.id"],
+      raw: true,
+    });
     const { count, rows } = await db.Users.findAndCountAll({
       offset: offset,
       limit: limit,
@@ -246,7 +248,7 @@ const fetchDoctorOfCLinic = async (page, limit, id) => {
       totalPages: totalPages,
       doctors: rows,
       clinic: clinic ? clinic : {},
-      lstSpecialOfClinic
+      lstSpecialOfClinic,
     };
     return {
       EM: "create page successfully",
@@ -466,9 +468,8 @@ const searchClinic = async (search, page, limit) => {
             },
 
             {
-              status: isActive
-            }
-
+              status: isActive,
+            },
           ],
         },
         order: [["id", "DESC"]],
@@ -506,5 +507,5 @@ module.exports = {
   getClinic,
   fetchAllClinicsOfSupport,
   getTopClinic,
-  searchClinic
+  searchClinic,
 };

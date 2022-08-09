@@ -363,13 +363,16 @@ const resetPassword = async (user) => {
     let findUser = await db.Users.findOne({
       where: { id: user.id },
     });
-    console.log("check email và hasemail>>>", findUser.dataValues.email, user.hashEmail)
+    console.log(
+      "check email và hasemail>>>",
+      findUser.dataValues.email,
+      user.hashEmail
+    );
     let isCorrectEmail = compareEmail(
       findUser.dataValues.email,
       user.hashEmail
     );
     if (isCorrectEmail) {
-
       findUser.set({
         password: hashUserPassword(user.dataNewPassword),
       });
@@ -514,16 +517,15 @@ const searchUser = async (search, page, limit) => {
               },
             },
             {
-              '$Group.name$': {
+              "$Group.name$": {
                 [Op.like]: `%${search}%`,
               },
             },
             {
-              '$Clinic.nameVI$': {
+              "$Clinic.nameVI$": {
                 [Op.like]: `%${search}%`,
               },
-            }
-
+            },
           ],
         },
 
@@ -542,8 +544,6 @@ const searchUser = async (search, page, limit) => {
           },
         ],
         order: [["id", "DESC"]],
-
-
       });
       //count tổng số bảng ghi, rows là mảng các phần tử
       let totalPages = Math.ceil(count / limit);
@@ -603,7 +603,6 @@ const searchUser = async (search, page, limit) => {
   }
 };
 
-
 module.exports = {
   getAllUsers,
   createUser,
@@ -617,5 +616,4 @@ module.exports = {
   updatePassword,
   getUserById,
   searchUser,
-
 };
