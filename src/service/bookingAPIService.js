@@ -387,10 +387,6 @@ const doctorReadBooking = async (date, doctorId) => {
             "email",
             "address",
           ],
-          include: {
-            model: db.Genders,
-            attributes: ["id", "nameEN", "nameVI"],
-          },
         },
         {
           model: db.Schedule_Detail,

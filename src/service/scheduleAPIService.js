@@ -212,6 +212,11 @@ const getSchedule = async (doctorId, date, clinicId) => {
         {
           model: db.Schedule_Detail,
           attributes: ["id", "currentNumber", "maxNumber"],
+          where: {
+            maxNumber: {
+              [Op.gt]: col("Schedule_Details.currentNumber"),
+            },
+          },
           include: {
             model: db.Timeframes,
             attributes: ["nameEN", "nameVI"],
